@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { money } from '~/utils';
+import { getDateLeftInCurrentMonth } from '~/utils/time';
 
 const ExpenseManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -28,30 +30,12 @@ const ExpenseManagement = () => {
     }, 0);
   }
 
-  const getDateLeft = () => {
-    const today = new Date();
-
-    const firstDayNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-
-    const lastDayCurrentMonth = new Date(firstDayNextMonth - 1);
-
-    const daysLeft = lastDayCurrentMonth.getDate() - today.getDate();
-    return daysLeft
-  }
-
-  function formatVietnameseCurrency(amount) {
-    const amountStr = amount.toString();
-    const reversedAmountStr = amountStr.split('').reverse().join('');
-    const formattedReversedAmountStr = reversedAmountStr.replace(/(\d{3})(?=\d)/g, '$1.');
-    return formattedReversedAmountStr.split('').reverse().join('');
-  }
-
   return (
     <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">Quản lý khoản chi</h2>
       <div className="flex container justify-between">
-      <p className="mb-6">Tổng tiền đã chi: {formatVietnameseCurrency(calculateTotalAmount())}</p>
-      <p className="">Số ngày còn lại trong tháng: {getDateLeft()}</p>
+      <p className="mb-6">Tổng tiền đã chi: {money.formatVietnameseCurrency(calculateTotalAmount())}</p>
+      <p className="">Số ngày còn lại trong tháng: {getDateLeftInCurrentMonth()}</p>
       </div>
       <div className="flex mb-4 justify-end">
         <p className="align-middle mt-2 mr-2">Lọc theo tháng: </p>
@@ -97,7 +81,7 @@ const ExpenseManagement = () => {
               <tr key={expense.paying_id} className="border-b">
                 <td className="p-4">{expense.paying_name}</td>
                 <td className="p-4">{expense.category_name}</td>
-                <td className="p-4">{formatVietnameseCurrency(expense.paying_amount)}</td>
+                <td className="p-4">{money.formatVietnameseCurrency(expense.paying_amount)}</td>
                 <td className="p-4 ">{expense.time}</td>
                 <td className="p-4 flex items-center	  space-x-2">
                   <button className="text-blue-500 hover:text-blue-700">

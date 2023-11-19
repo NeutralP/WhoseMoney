@@ -29,6 +29,17 @@ export function getRemainingTimeStringNoDiff(timestampMs) {
   };
 }
 
+export const getDateLeftInCurrentMonth = () => {
+  const today = new Date();
+
+  const firstDayNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
+  const lastDayCurrentMonth = new Date(firstDayNextMonth - 1);
+
+  const daysLeft = lastDayCurrentMonth.getDate() - today.getDate();
+  return daysLeft
+}
+
 function getRemainingSeconds(nowDayjs, timestampDayjs) {
   const seconds = timestampDayjs.diff(nowDayjs, 'seconds') % 60;
   return padWithZeros(seconds, 2);
