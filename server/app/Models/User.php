@@ -21,6 +21,10 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'email',
         'password',
+        'phone_number',
+        'date_of_birth',
+        'address',
+        'username',
     ];
 
     /**
@@ -29,7 +33,6 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $hidden = [
-        'userProfile',
         'password',
         'remember_token',
     ];
@@ -43,11 +46,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = [
-        'profile',
-        'private_dir',
-        'public_dir',
-    ];
+    protected $appends = [];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -85,5 +84,40 @@ class User extends Authenticatable implements JWTSubject
     public function socialAccounts(): HasMany
     {
         return $this->hasMany(SocialAccount::class);
+    }
+
+    public function category(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function payingMoney(): HasMany
+    {
+        return $this->hasMany(PayingMoney::class);
+    }
+
+    public function balance(): HasMany
+    {
+        return $this->hasMany(Balance::class);
+    }
+
+    public function earningMoney(): HasMany
+    {
+        return $this->hasMany(EarningMoney::class);
+    }
+
+    public function earningTarget(): HasMany
+    {
+        return $this->hasMany(EarningTarget::class);
+    }
+
+    public function savingMoney(): HasMany
+    {
+        return $this->hasMany(SavingMoney::class);
+    }
+
+    public function savingTarget(): HasMany
+    {
+        return $this->hasMany(SavingTarget::class);
     }
 }

@@ -3,8 +3,12 @@ import { AiOutlineMenuUnfold } from 'react-icons/ai';
 import { useMediaQuery } from 'usehooks-ts';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '~/utils';
+import axiosClient from '~/axios';
+import { userStateContext } from '~/contexts/ContextProvider';
 
 const Sidebar = ({}) => {
+  const { setCurrentUser, setUserToken } = userStateContext();
+
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -98,6 +102,13 @@ const Sidebar = ({}) => {
     }
   };
 
+  const handleLogOut = () => {
+    axiosClient.post('/auth/signout').then(() => {
+      setCurrentUser({});
+      setUserToken(null);
+    });
+  };
+
   return (
     <>
       <aside
@@ -109,6 +120,20 @@ const Sidebar = ({}) => {
           isMobile && 'w-0'
         )}
       >
+        <div role="button" onClick={handleLogOut}>
+          Logout
+        </div>
+        <div
+          role="button"
+          className={cn(
+            'w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition',
+            isMobile && 'opacity-100'
+          )}
+          onClick={collapse}
+        >
+          <AiOutlineMenuUnfold className="w-6 h-6" />
+        </div>
+
         <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}
