@@ -3,6 +3,8 @@ import { add_axios_401_interceptor } from './axios.js';
 import ExpenseManagement from './components/ExpenseManagement.jsx';
 import MainLayout from './components/MainLayout.jsx';
 import ReceiptsDetail from './views/ReceiptsDetail.jsx';
+import SignIn from './views/SignIn.jsx';
+import SignUp from './views/SignUp.jsx';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +20,14 @@ const router = createBrowserRouter([
         element: <ExpenseManagement />,
       },
     ],
+  },
+  {
+    path: '/sign-in',
+    element: <SignIn />,
+  },
+  {
+    path: '/sign-up',
+    element: <SignUp />,
   },
 ]);
 
