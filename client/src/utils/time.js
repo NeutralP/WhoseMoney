@@ -31,13 +31,17 @@ export function getRemainingTimeStringNoDiff(timestampMs) {
 
 export const getDateLeftInCurrentMonth = () => {
   const today = new Date();
-
   const firstDayNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-
   const lastDayCurrentMonth = new Date(firstDayNextMonth - 1);
-
   const daysLeft = lastDayCurrentMonth.getDate() - today.getDate();
   return daysLeft
+}
+
+export function formatDate(date) {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}/${month}/${day}`;
 }
 
 function getRemainingSeconds(nowDayjs, timestampDayjs) {

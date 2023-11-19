@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import ExpenseManagementModal from '~/features/ExpenseManagementModal/ExpenseManagementModal';
 import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 
 const ExpenseManagement = () => {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  
-  const expenses = [
+  const expenses_data = [
     { paying_id: 1, paying_name: 'Mua giáo trình', category_name: 'Học tập', paying_amount: 1000000, time: '2023-10-02' },
     { paying_id: 2, paying_name: 'Ăn phở', category_name: 'Ăn uống', paying_amount: 500000, time: '2023-10-05' },
     { paying_id: 3, paying_name: 'Nạp game', category_name: 'Giải trí', paying_amount: 500000, time: '2023-10-10' },
@@ -14,14 +12,23 @@ const ExpenseManagement = () => {
     { paying_id: 5, paying_name: 'Mua áo', category_name: 'Giải trí', paying_amount: 500000, time: '2022-10-10' },
     { paying_id: 6, paying_name: 'Mua điện thoại', category_name: 'Học tập', paying_amount: 500000, time: '2022-10-12' },
   ];
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [expenses, setExpenses] = useState(expenses_data);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  const filteredExpenses = expenses.filter(expense => {
-    const expenseDate = new Date(expense.time);
-    return (
-      (selectedMonth ? expenseDate.getMonth() + 1 === selectedMonth : true) &&
-      (selectedYear ? expenseDate.getFullYear() === selectedYear : true)
-    );
-  });
+    useEffect(() => {
+      const newFilteredExpenses = expenses.filter(expense => {
+        const expenseDate = new Date(expense.time);
+        return (
+          (selectedMonth ? expenseDate.getMonth() + 1 === selectedMonth : true) &&
+          (selectedYear ? expenseDate.getFullYear() === selectedYear : true)
+        );
+      });
+      setFilteredExpenses(newFilteredExpenses);
+    },[expenses, selectedMonth, selectedYear])
+
 
   const calculateTotalAmount = () => {
     return expenses.reduce((acc, expense) => {
@@ -29,6 +36,12 @@ const ExpenseManagement = () => {
       return acc + amount
     }, 0);
   }
+
+  const addExpense = (expense) => {
+    setExpenses([...expenses, { ...expense, paying_id: expenses.length + 1 }]);
+    console.log(expenses);
+  };
+
 
   return (
     <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
@@ -100,9 +113,10 @@ const ExpenseManagement = () => {
         </table>
       </div>
 
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded">
+      <button onClick={() => setModalOpen(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded">
         Thêm khoản chi
       </button>
+      <ExpenseManagementModal isOpen={isModalOpen} onSave={addExpense} onClose={() => setModalOpen(false)} />
     </div>
   );
 };
