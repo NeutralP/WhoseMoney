@@ -4,11 +4,10 @@
     "baseUrl": "./src",
     "paths": {
       "@/components/*": ["./components/*"],
-      "@/pages/*": ["./pages/*"],
+      "@/views/*": ["./views/*"],
       // "@/routes/*": ["./routes/*"],
       "~/*": ["./*"]
-    },
-  },
+    }
+  }
   // "include": ["src/**/*"]
 }
-

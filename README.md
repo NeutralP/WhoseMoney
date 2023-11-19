@@ -21,10 +21,10 @@
 
 ## Production && Domains
 
-- Client: `http://localhost:3000`
-- Server: `http://localhost:3000/api/`
-- Phpmyadmin: `http://phpmyadmin.localhost:3000`
-- Traefik: `http://traefik.localhost:3000`
+- Client: http://project.localhost:3000
+- Server: http://project.localhost:3000/api/
+- Phpmyadmin: http://phpmyadmin.localhost:3000
+- Traefik: http://traefik.localhost:3000
 
 ## Setup and Configuration
 
@@ -65,8 +65,8 @@ make devfresh
 Câu lệnh để vào shell hay command hoặc cj đó k bt gọi sao:
 
 ```sh
-docker exec -it memoapp-server-1 sh
-docker exec -it memoapp-client-1 sh
+docker exec -it project-server-1 sh
+docker exec -it project-client-1 sh
 ```
 
 Câu lệnh để cấp quyền chỉnh sửa file nếu bị VS Code hỏi
