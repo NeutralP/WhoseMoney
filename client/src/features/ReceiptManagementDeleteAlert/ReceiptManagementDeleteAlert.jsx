@@ -25,7 +25,7 @@ const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 okButtonProps={{ style: { margin: '0 10px' } }} // Add margin to the OK button
-                cancelButtonProps={{ style: { margin: '0 10px', color: 'white'}, type: 'danger'}} // Add margin to the Cancel button
+                cancelButtonProps={{ style: { margin: '0 10px', backgroundColor: 'white'}}} // Add margin to the Cancel button
             >
                 <p style={{margin: '0 16px'}}>Bạn có chắc chắn muốn xóa khoản thu này không?</p>
             </Modal>
