@@ -4,8 +4,12 @@ import { Navigate, Outlet } from 'react-router-dom';
 import '~/styles/MainLayout.scss';
 import { userStateContext } from '~/contexts/ContextProvider';
 import axiosClient from '~/axios';
+import useGlobalModalStore from '~/store/useGlobalModalStore';
+import ConfirmModal from './ConfirmModal';
 
 const MainLayout = () => {
+  const [confirmModal] = useGlobalModalStore((state) => [state.confirmModal]);
+
   const { setCurrentUser, userToken } = userStateContext();
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +41,14 @@ const MainLayout = () => {
           <Outlet />
         </>
       )}
+
+      <ConfirmModal
+        open={confirmModal.open}
+        title={confirmModal.title}
+        content={confirmModal.content}
+        handleCancel={confirmModal.handleCancel}
+        handleOk={confirmModal.handleOk}
+      />
     </div>
   );
 };

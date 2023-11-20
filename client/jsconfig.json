@@ -3,8 +3,8 @@
     // "jsx": "preserve",
     "baseUrl": "./src",
     "paths": {
-      "@/components/*": ["./components/*"],
-      "@/views/*": ["./views/*"],
+      "~/components/*": ["./components/*"],
+      "~/views/*": ["./views/*"],
       // "@/routes/*": ["./routes/*"],
       "~/*": ["./*"]
     }
