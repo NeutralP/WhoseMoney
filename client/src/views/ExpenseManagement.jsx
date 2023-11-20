@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ExpenseManagementModal from '~/features/ExpenseManagementModal/ExpenseManagementModal';
+import ExpenseManagementDeleteAlert from '~/features/ExpenseManagementDeleteAlert/ExpenseManagementDeleteAlert';
 import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 
@@ -42,6 +43,11 @@ const ExpenseManagement = () => {
     console.log(expenses);
   };
 
+  const deleteExpense = (expenseToDelete) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.filter((expense) => expense.paying_id !== expenseToDelete.paying_id)
+    );
+  };
 
   return (
     <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
@@ -103,9 +109,7 @@ const ExpenseManagement = () => {
                   <button className="text-green-500 hover:text-green-700">
                     Edit
                   </button>
-                  <button className="text-red-500 hover:text-red-700">
-                    Delete
-                  </button>
+                  <ExpenseManagementDeleteAlert expense={expense} deleteExpense={deleteExpense} />
                 </td>
               </tr>
             ))}
