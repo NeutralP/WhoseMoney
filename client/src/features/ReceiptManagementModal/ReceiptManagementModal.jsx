@@ -1,14 +1,14 @@
 import React, {useState, useEffect, useRef} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './ExpenseManagementModal.scss'
+import './ReceiptManagementModal.scss'
 import { formatDate } from '~/utils/time';
 
 
-const ExpenseManagementModal = ({ isOpen, onClose, onSave}) => {
+const ReceiptManagementModal = ({ isOpen, onClose, onSave}) => {
     const modalRef = useRef();
     const [startDate, setStartDate] = useState(new Date());
-    const [expenseData, setExpenseData] = useState({
+    const [receiptData, setReceiptData] = useState({
         paying_name: '',
         category: '',
         paying_amount: '',
@@ -29,20 +29,20 @@ const ExpenseManagementModal = ({ isOpen, onClose, onSave}) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setExpenseData({ ...expenseData, [name]: value });
+        setReceiptData({ ...receiptData, [name]: value });
       };
 
     const handlePayingMoneyChange = (e) => {
         const { name, value } = e.target;
-        setExpenseData({ ...expenseData, [name]: Number(value) });
+        setReceiptData({ ...receiptData, [name]: Number(value) });
     };
 
 
     const handleSubmit = (e) => {
         e.preventDefault(); 
-        expenseData.time = formatDate(startDate)
-        onSave(expenseData);
-        console.log(expenseData);
+        ReceiptData.time = formatDate(startDate)
+        onSave(ReceiptData);
+        console.log(receiptData);
     };
 
     if (!isOpen) return null;
@@ -70,7 +70,7 @@ const ExpenseManagementModal = ({ isOpen, onClose, onSave}) => {
             onChange={handleInputChange} 
             type="text" 
             name="paying_name"
-            value={expenseData.paying_name}
+            value={ReceiptData.paying_name}
             placeholder="Tên khoản chi"
             className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2" />
         </div>
@@ -89,7 +89,7 @@ const ExpenseManagementModal = ({ isOpen, onClose, onSave}) => {
             type="text" 
             name="paying_amount"
             placeholder="Số Tiền" 
-            value={expenseData.paying_amount}
+            value={receiptData.paying_amount}
             className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2"/>
         </div>
 
@@ -114,4 +114,4 @@ const ExpenseManagementModal = ({ isOpen, onClose, onSave}) => {
   );
 };
 
-export default ExpenseManagementModal;
+export default ReceiptManagementModal;

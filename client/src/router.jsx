@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { add_axios_401_interceptor } from './axios.js';
 import MainLayout from './components/MainLayout.jsx';
-import ExpenseManagement from './views/ExpenseManagement.jsx';
+import ReceiptManagement from './views/ReceiptManagement.jsx';
 import ReceiptsDetail from './views/ReceiptsDetail.jsx';
 import SignIn from './views/SignIn.jsx';
 import SignUp from './views/SignUp.jsx';
@@ -16,8 +16,8 @@ const router = createBrowserRouter([
         element: <ReceiptsDetail />,
       },
       {
-        path: '/expense-management',
-        element: <ExpenseManagement />,
+        path: '/receipt-management',
+        element: <ReceiptManagement />,
       },
     ],
   },
