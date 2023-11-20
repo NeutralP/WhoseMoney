@@ -18,3 +18,16 @@
 .app-container {
   @apply flex-1 flex flex-col max-w-full relative min-w-0;
 }
+
+.custom-modal {
+  :where(.css-dev-only-do-not-override-2i2tap).ant-btn-primary {
+    background-color: #1677ff;
+  }
+
+  :where(.css-dev-only-do-not-override-2i2tap).ant-input:focus,
+  :where(.css-dev-only-do-not-override-2i2tap).ant-input:focus-within {
+    border: 1px solid #1677ff;
+    box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+    outline: 0;
+  }
+}

@@ -698,33 +698,6 @@ textarea:focus {
   background-color: #e1e7ff;
 }
 
-.ant-image:hover .ant-image-mask {
-  display: none;
-}
-
-.ant-modal-content {
-  padding: 16px 0 !important;
-  border-radius: 16px !important;
-}
-
-.ant-btn {
-  background-color: #1677ff;
-}
-
-.ant-modal-header {
-  padding: 0 16px;
-}
-
-.ant-image {
-  height: 100%;
-}
-
-.custom-popover .ant-popover-inner {
-  border-radius: 16px;
-  padding: 0;
-  box-shadow: 0 12px 24px rgba(47, 63, 86, 0.2);
-}
-
 /* Loader */
 .loader {
   border: 2px solid #efefef;
@@ -781,23 +754,6 @@ textarea:focus {
   100% {
     background-position: 0 50%;
   }
-}
-
-/* RBC custom CSS */
-.rbc-overlay {
-  display: flex;
-  flex-direction: column;
-  border-radius: 8px;
-}
-
-.rbc-overlay-header {
-  margin: -5px -10px 5px -10px;
-  padding: 2px 10px 7px;
-  border-bottom: none;
-}
-
-.rbc-overlay .rbc-event-continues-after {
-  border-radius: 5px;
 }
 
 .scrollable-y {
