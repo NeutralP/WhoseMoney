@@ -6,12 +6,12 @@ import { getDateLeftInCurrentMonth } from '~/utils/time';
 
 const ReceiptManagement = () => {
   const receipts_data = [
-    { paying_id: 1, paying_name: 'Mua giáo trình', category_name: 'Học tập', paying_amount: 1000000, time: '2023-10-02' },
-    { paying_id: 2, paying_name: 'Ăn phở', category_name: 'Ăn uống', paying_amount: 500000, time: '2023-10-05' },
-    { paying_id: 3, paying_name: 'Nạp game', category_name: 'Giải trí', paying_amount: 500000, time: '2023-10-10' },
-    { paying_id: 4, paying_name: 'Học tiếng Nhật', category_name: 'Học tập', paying_amount: 500000, time: '2023-11-12' },
-    { paying_id: 5, paying_name: 'Mua áo', category_name: 'Giải trí', paying_amount: 500000, time: '2022-10-10' },
-    { paying_id: 6, paying_name: 'Mua điện thoại', category_name: 'Học tập', paying_amount: 500000, time: '2022-10-12' },
+    { receipt_id: 1, receipt_name: 'Lương hàng tháng', receipt_source: 'Công ty ABC', receipt_amount: 1000000, time: '2023-10-02' },
+    { receipt_id: 2, receipt_name: 'Bán phở', receipt_source: 'Ăn uống', receipt_amount: 500000, time: '2023-10-05' },
+    { receipt_id: 3, receipt_name: 'Lương hàng tháng', receipt_source: 'Quán cà phê', receipt_amount: 500000, time: '2023-10-10' },
+    { receipt_id: 4, receipt_name: 'Bán khoá học tiếng Nhật', receipt_source: 'Công ty ABC', receipt_amount: 500000, time: '2023-11-12' },
+    { receipt_id: 5, receipt_name: 'Bán áo', receipt_source: 'Giải trí', receipt_amount: 500000, time: '2022-10-10' },
+    { receipt_id: 6, receipt_name: 'Lương hàng tháng', receipt_source: 'Công ty ABC', receipt_amount: 500000, time: '2022-10-12' },
   ];
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -32,20 +32,20 @@ const ReceiptManagement = () => {
 
 
   const calculateTotalAmount = () => {
-    return receipts.reduce((acc, receipt) => {
-      const amount = receipt.paying_amount;
+    return filteredReceipts.reduce((acc, receipt) => {
+      const amount = receipt.receipt_amount;
       return acc + amount
     }, 0);
   }
 
   const addReceipt = (receipt) => {
-    setReceipts([...receipts, { ...receipt, paying_id: receipts.length + 1 }]);
+    setReceipts([...receipts, { ...receipt, receipt_id: receipts.length + 1 }]);
     console.log(receipts);
   };
 
   const deleteReceipt = (receiptToDelete) => {
     setReceipts((prevReceipts) =>
-      prevReceipts.filter((receipt) => receipt.paying_id !== receiptToDelete.paying_id)
+      prevReceipts.filter((receipt) => receipt.receipt_id !== receiptToDelete.receipt_id)
     );
   };
 
@@ -89,7 +89,7 @@ const ReceiptManagement = () => {
           <thead className="bg-gray-200 text-left text-gray-600">
             <tr>
               <th className="p-4">Tên khoản thu</th>
-              <th className="p-4">Danh mục</th>
+              <th className="p-4">Nguồn tiền</th>
               <th className="p-4">Số tiền</th>
               <th className="p-4">Thời gian</th>
               <th className="p-4 ">Hành động</th>
@@ -97,10 +97,10 @@ const ReceiptManagement = () => {
           </thead>
           <tbody>
             {filteredReceipts.map((receipt) => (
-              <tr key={receipt.paying_id} className="border-b">
-                <td className="p-4">{receipt.paying_name}</td>
-                <td className="p-4">{receipt.category_name}</td>
-                <td className="p-4">{money.formatVietnameseCurrency(receipt.paying_amount)}</td>
+              <tr key={receipt.receipt_id} className="border-b">
+                <td className="p-4">{receipt.receipt_name}</td>
+                <td className="p-4">{receipt.receipt_source}</td>
+                <td className="p-4">{money.formatVietnameseCurrency(receipt.receipt_amount)}</td>
                 <td className="p-4 ">{receipt.time}</td>
                 <td className="p-4 flex items-center	  space-x-2">
                   <button className="text-blue-500 hover:text-blue-700">
