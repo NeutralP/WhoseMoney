@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { add_axios_401_interceptor } from './axios.js';
-import ExpenseManagement from './components/ExpenseManagement.jsx';
 import MainLayout from './components/MainLayout.jsx';
+import ExpenseManagement from './views/ExpenseManagement.jsx';
 import ReceiptsDetail from './views/ReceiptsDetail.jsx';
 import SignIn from './views/SignIn.jsx';
 import SignUp from './views/SignUp.jsx';
