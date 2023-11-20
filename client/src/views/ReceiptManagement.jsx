@@ -1,90 +1,90 @@
 import React, { useEffect, useState } from 'react';
-import ExpenseManagementModal from '~/features/ExpenseManagementModal/ExpenseManagementModal';
-import ExpenseManagementDeleteAlert from '~/features/ExpenseManagementDeleteAlert/ExpenseManagementDeleteAlert';
+import ReceiptManagementModal from '~/features/ReceiptManagementModal/ReceiptManagementModal';
+import ReceiptManagementDeleteAlert from '~/features/ReceiptManagementDeleteAlert/ReceiptManagementDeleteAlert';
 import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 import ReceiptsDetailModal from '../features/Receipt/ReceiptsDetailModal';
 
-const ExpenseManagement = () => {
-  const expenses_data = [
+const ReceiptManagement = () => {
+  const receipts_data = [
     {
-      paying_id: 1,
-      paying_name: 'Mua giáo trình',
-      category_name: 'Học tập',
-      paying_amount: 1000000,
+      receipt_id: 1,
+      receipt_name: 'Lương hàng tháng',
+      receipt_source: 'Công ty ABC',
+      receipt_amount: 1000000,
       time: '2023-10-02',
     },
     {
-      paying_id: 2,
-      paying_name: 'Ăn phở',
-      category_name: 'Ăn uống',
-      paying_amount: 500000,
+      receipt_id: 2,
+      receipt_name: 'Bán phở',
+      receipt_source: 'Ăn uống',
+      receipt_amount: 500000,
       time: '2023-10-05',
     },
     {
-      paying_id: 3,
-      paying_name: 'Nạp game',
-      category_name: 'Giải trí',
-      paying_amount: 500000,
+      receipt_id: 3,
+      receipt_name: 'Lương hàng tháng',
+      receipt_source: 'Quán cà phê',
+      receipt_amount: 500000,
       time: '2023-10-10',
     },
     {
-      paying_id: 4,
-      paying_name: 'Học tiếng Nhật',
-      category_name: 'Học tập',
-      paying_amount: 500000,
+      receipt_id: 4,
+      receipt_name: 'Bán khoá học tiếng Nhật',
+      receipt_source: 'Công ty ABC',
+      receipt_amount: 500000,
       time: '2023-11-12',
     },
     {
-      paying_id: 5,
-      paying_name: 'Mua áo',
-      category_name: 'Giải trí',
-      paying_amount: 500000,
+      receipt_id: 5,
+      receipt_name: 'Bán áo',
+      receipt_source: 'Giải trí',
+      receipt_amount: 500000,
       time: '2022-10-10',
     },
     {
-      paying_id: 6,
-      paying_name: 'Mua điện thoại',
-      category_name: 'Học tập',
-      paying_amount: 500000,
+      receipt_id: 6,
+      receipt_name: 'Lương hàng tháng',
+      receipt_source: 'Công ty ABC',
+      receipt_amount: 500000,
       time: '2022-10-12',
     },
   ];
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [expenses, setExpenses] = useState(expenses_data);
-  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [receipts, setReceipts] = useState(receipts_data);
+  const [filteredReceipts, setFilteredReceipts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState({});
   const [receiptDetailModalOpen, setReceiptDetailModalOpen] = useState(false);
 
   useEffect(() => {
-    const newFilteredExpenses = expenses.filter((expense) => {
-      const expenseDate = new Date(expense.time);
+    const newFilteredReceipts = receipts.filter((receipt) => {
+      const receiptDate = new Date(receipt.time);
       return (
-        (selectedMonth ? expenseDate.getMonth() + 1 === selectedMonth : true) &&
-        (selectedYear ? expenseDate.getFullYear() === selectedYear : true)
+        (selectedMonth ? receiptDate.getMonth() + 1 === selectedMonth : true) &&
+        (selectedYear ? receiptDate.getFullYear() === selectedYear : true)
       );
     });
-    setFilteredExpenses(newFilteredExpenses);
-  }, [expenses, selectedMonth, selectedYear]);
+    setFilteredReceipts(newFilteredReceipts);
+  }, [receipts, selectedMonth, selectedYear]);
 
   const calculateTotalAmount = () => {
-    return expenses.reduce((acc, expense) => {
-      const amount = expense.paying_amount;
+    return filteredReceipts.reduce((acc, receipt) => {
+      const amount = receipt.receipt_amount;
       return acc + amount;
     }, 0);
   };
 
-  const addExpense = (expense) => {
-    setExpenses([...expenses, { ...expense, paying_id: expenses.length + 1 }]);
-    console.log(expenses);
+  const addReceipt = (receipt) => {
+    setReceipts([...receipts, { ...receipt, receipt_id: receipts.length + 1 }]);
+    console.log(receipts);
   };
 
-  const deleteExpense = (expenseToDelete) => {
-    setExpenses((prevExpenses) =>
-      prevExpenses.filter(
-        (expense) => expense.paying_id !== expenseToDelete.paying_id
+  const deleteReceipt = (receiptToDelete) => {
+    setReceipts((prevReceipts) =>
+      prevReceipts.filter(
+        (receipt) => receipt.receipt_id !== receiptToDelete.receipt_id
       )
     );
   };
@@ -92,11 +92,11 @@ const ExpenseManagement = () => {
   return (
     <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">
-        Quản lý khoản chi
+        Quản lý khoản thu
       </h2>
       <div className="flex container justify-between">
         <p className="mb-6">
-          Tổng tiền đã chi:{' '}
+          Tổng tiền đã thu:{' '}
           {money.formatVietnameseCurrency(calculateTotalAmount())}
         </p>
         <p className="">
@@ -137,39 +137,42 @@ const ExpenseManagement = () => {
         <table className="w-full">
           <thead className="bg-gray-200 text-left text-gray-600">
             <tr>
-              <th className="p-4">Tên khoản chi</th>
-              <th className="p-4">Danh mục</th>
+              <th className="p-4">Tên khoản thu</th>
+              <th className="p-4">Nguồn tiền</th>
               <th className="p-4">Số tiền</th>
               <th className="p-4">Thời gian</th>
               <th className="p-4 ">Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {filteredExpenses.map((expense) => (
+            {filteredReceipts.map((receipt) => (
               <tr
                 onClick={() => {
-                  setSelectedReceipt(expense);
+                  setSelectedReceipt(receipt);
                   setReceiptDetailModalOpen(true);
                 }}
-                key={expense.paying_id}
+                key={receipt.receipt_id}
                 className="border-b cursor-pointer"
               >
-                <td className="p-4">{expense.paying_name}</td>
-                <td className="p-4">{expense.category_name}</td>
+                <td className="p-4">{receipt.receipt_name}</td>
+                <td className="p-4">{receipt.receipt_source}</td>
                 <td className="p-4">
-                  {money.formatVietnameseCurrency(expense.paying_amount)}
+                  {money.formatVietnameseCurrency(receipt.receipt_amount)}
                 </td>
-                <td className="p-4 ">{expense.time}</td>
-                <td className="p-4 flex items-center	  space-x-2">
+                <td className="p-4 ">{receipt.time}</td>
+                <td
+                  onClick={(e) => e.stopPropagation()}
+                  className="p-4 flex items-center space-x-2"
+                >
                   <button className="text-blue-500 hover:text-blue-700">
                     View
                   </button>
                   <button className="text-green-500 hover:text-green-700">
                     Edit
                   </button>
-                  <ExpenseManagementDeleteAlert
-                    expense={expense}
-                    deleteExpense={deleteExpense}
+                  <ReceiptManagementDeleteAlert
+                    receipt={receipt}
+                    deleteReceipt={deleteReceipt}
                   />
                 </td>
               </tr>
@@ -182,12 +185,11 @@ const ExpenseManagement = () => {
         onClick={() => setModalOpen(true)}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded"
       >
-        Thêm khoản chi
+        Thêm khoản thu
       </button>
-
-      <ExpenseManagementModal
+      <ReceiptManagementModal
         isOpen={isModalOpen}
-        onSave={addExpense}
+        onSave={addReceipt}
         onClose={() => setModalOpen(false)}
       />
 
@@ -200,4 +202,4 @@ const ExpenseManagement = () => {
   );
 };
 
-export default ExpenseManagement;
+export default ReceiptManagement;

@@ -1,9 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { add_axios_401_interceptor } from './axios.js';
 import MainLayout from './components/MainLayout.jsx';
-import ExpenseManagement from './views/ExpenseManagement.jsx';
 import SignIn from './views/SignIn.jsx';
 import SignUp from './views/SignUp.jsx';
+import ReceiptManagement from './views/ReceiptManagement.jsx';
 
 const router = createBrowserRouter([
   {
@@ -12,7 +12,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/receipts-management',
-        element: <ExpenseManagement />,
+        element: <ReceiptManagement />,
       },
     ],
   },
