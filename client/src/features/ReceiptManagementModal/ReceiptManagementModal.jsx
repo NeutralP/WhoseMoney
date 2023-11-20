@@ -9,9 +9,9 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave}) => {
     const modalRef = useRef();
     const [startDate, setStartDate] = useState(new Date());
     const [receiptData, setReceiptData] = useState({
-        paying_name: '',
-        category: '',
-        paying_amount: '',
+        receipt_name: '',
+        receipt_source: '',
+        receipt_amount: '',
         time: '',
       });
     
@@ -40,8 +40,8 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault(); 
-        ReceiptData.time = formatDate(startDate)
-        onSave(ReceiptData);
+        receiptData.time = formatDate(startDate)
+        onSave(receiptData);
         console.log(receiptData);
     };
 
@@ -51,8 +51,8 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave}) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <div ref={modalRef} className="bg-white p-5 rounded-lg w-96 shadow-lg">
       <form className="bg-white" onSubmit={handleSubmit}>
-        <button onClick={onClose} className="float-right font-bold">X</button>
-        <div className="clear-both text-lg font-bold mb-4">Thêm khoản chi</div>
+        <button  type="button" onClick={onClose} className="float-right font-bold">X</button>
+        <div className="clear-both text-lg font-bold mb-4">Thêm khoản thu</div>
         
         <div className="mb-2">
           <label className="block mb-1 font-bold">Số dư trước:</label>
@@ -65,13 +65,13 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave}) => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 font-bold">Tên khoản chi</label>
+          <label className="block mb-1 font-bold">Tên khoản thu</label>
           <input 
             onChange={handleInputChange} 
             type="text" 
-            name="paying_name"
-            value={ReceiptData.paying_name}
-            placeholder="Tên khoản chi"
+            name="receipt_name"
+            value={receiptData.receipt_name}
+            placeholder="Tên khoản thu"
             className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2" />
         </div>
 
@@ -87,9 +87,9 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave}) => {
           <input
             onChange={handlePayingMoneyChange} 
             type="text" 
-            name="paying_amount"
+            name="receipt_amount"
             placeholder="Số Tiền" 
-            value={receiptData.paying_amount}
+            value={receiptData.receipt_amount}
             className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2"/>
         </div>
 
