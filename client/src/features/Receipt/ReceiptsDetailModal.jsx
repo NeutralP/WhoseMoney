@@ -1,15 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal } from 'antd';
 import useGlobalModalStore from '~/store/useGlobalModalStore';
 import EditReceiptModal from './EditReceiptModal';
+import { formatDate } from '~/utils/time';
+import { money, objUtils } from '~/utils';
+import axiosClient from '~/axios';
 
-const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
+const ReceiptsDetailModal = ({
+  receipt,
+  editReceipt,
+  deleteReceipt,
+  open,
+  setOpen,
+}) => {
   const [setConfirmModal, resetConfirmModal] = useGlobalModalStore((state) => [
     state.setConfirmModal,
     state.resetConfirmModal,
   ]);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const [newReceipt, setNewReceipt] = useState(receipt);
+
+  useEffect(() => {
+    setNewReceipt(receipt);
+  }, [receipt.id]);
+
+  if (objUtils.isEmptyObject(newReceipt)) {
+    return <></>;
+  }
 
   return (
     <Modal
@@ -24,8 +43,8 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
     >
       <div className="flex flex-col">
         <header className="text-xl font-medium flex items-center justify-center mt-2 mb-4">
-          {/* {receipt.name} */}
-          Luong hang thang
+          {newReceipt?.name}
+          {/* Luong hang thang */}
         </header>
 
         <div className="grid grid-cols-2 gap-4 pb-8">
@@ -34,8 +53,8 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
             Nguồn tiền
           </div>
           <div className="text-base text-center truncate">
-            {/* {receipt.source} */}
-            Cong ty ABC
+            {newReceipt?.source}
+            {/* Cong ty ABC */}
           </div>
 
           {/* Amount */}
@@ -43,8 +62,8 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
             Số tiền
           </div>
           <div className="text-base text-center truncate">
-            {/* {receipt.amount} */}
-            10.000.000
+            {money.formatVietnameseCurrency(newReceipt?.amount)}
+            {/* 10.000.000 */}
           </div>
 
           {/* Date */}
@@ -52,8 +71,8 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
             Thời gian
           </div>
           <div className="text-base text-center truncate">
-            {/* {receipt.date} */}
-            01/10/2023
+            {formatDate(new Date(newReceipt?.date))}
+            {/* 01/10/2023 */}
           </div>
 
           {/* Before balance */}
@@ -61,7 +80,7 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
             Sô dư trước
           </div>
           <div className="text-base text-center truncate">
-            {/* {receipt.before_balance} */}
+            {/* {newReceipt?.before_balance} */}
             10.000.000
           </div>
 
@@ -70,7 +89,7 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
             Số dư sau
           </div>
           <div className="text-base text-center truncate">
-            {/* {receipt.after_balance} */}
+            {/* {newReceipt?.after_balance} */}
             20.000.000
           </div>
         </div>
@@ -84,10 +103,17 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
                 content: 'Bạn có chắc muốn xóa khoản thu này?',
                 handleCancel: () => resetConfirmModal(),
                 handleOk: () => {
+                  deleteReceipt(newReceipt);
                   resetConfirmModal();
                   setTimeout(() => {
                     setOpen(false);
                   }, 0);
+
+                  axiosClient
+                    .delete(`/earning-money/${newReceipt.id}`)
+                    .catch((error) => {
+                      console.log(error);
+                    });
                 },
               })
             }
@@ -106,7 +132,14 @@ const ReceiptsDetailModal = ({ receipt, open, setOpen }) => {
         </footer>
       </div>
 
-      <EditReceiptModal open={editModalOpen} receipt={receipt} />
+      <EditReceiptModal
+        open={editModalOpen}
+        receipt={receipt}
+        newReceipt={newReceipt}
+        setNewReceipt={setNewReceipt}
+        setOpen={setEditModalOpen}
+        editReceipt={editReceipt}
+      />
     </Modal>
   );
 };

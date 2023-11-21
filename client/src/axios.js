@@ -18,7 +18,7 @@ export function add_axios_401_interceptor(routerObject) {
       // 401 - Unauthorized
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('TOKEN');
-        routerObject.navigate('/nfc/signin');
+        routerObject.navigate('/sign-in');
         return err;
       }
       throw err;
