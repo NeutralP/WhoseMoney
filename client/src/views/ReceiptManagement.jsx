@@ -5,51 +5,8 @@ import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 import ReceiptsDetailModal from '../features/Receipt/ReceiptsDetailModal';
 import axiosClient from '~/axios';
-
-const receipts_data = [
-  {
-    receipt_id: 1,
-    receipt_name: 'Lương hàng tháng',
-    receipt_source: 'Công ty ABC',
-    receipt_amount: 1000000,
-    time: '2023-10-02',
-  },
-  {
-    receipt_id: 2,
-    receipt_name: 'Bán phở',
-    receipt_source: 'Ăn uống',
-    receipt_amount: 500000,
-    time: '2023-10-05',
-  },
-  {
-    receipt_id: 3,
-    receipt_name: 'Lương hàng tháng',
-    receipt_source: 'Quán cà phê',
-    receipt_amount: 500000,
-    time: '2023-10-10',
-  },
-  {
-    receipt_id: 4,
-    receipt_name: 'Bán khoá học tiếng Nhật',
-    receipt_source: 'Công ty ABC',
-    receipt_amount: 500000,
-    time: '2023-11-12',
-  },
-  {
-    receipt_id: 5,
-    receipt_name: 'Bán áo',
-    receipt_source: 'Giải trí',
-    receipt_amount: 500000,
-    time: '2022-10-10',
-  },
-  {
-    receipt_id: 6,
-    receipt_name: 'Lương hàng tháng',
-    receipt_source: 'Công ty ABC',
-    receipt_amount: 500000,
-    time: '2022-10-12',
-  },
-];
+import CreateEarningTargetModal from '~/features/EarningTarget/CreateEarningTargetModal';
+import { Tooltip } from 'antd';
 
 const ReceiptManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -60,6 +17,7 @@ const ReceiptManagement = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState({});
   const [receiptDetailModalOpen, setReceiptDetailModalOpen] = useState(false);
+  const [createEarningTarget, setCreateEarningTarget] = useState(false);
 
   useEffect(() => {
     axiosClient
@@ -122,8 +80,8 @@ const ReceiptManagement = () => {
       <h2 className="text-2xl font-bold text-gray-700 mb-4">
         Quản lý khoản thu
       </h2>
-      <div className="flex container justify-between">
-        <p className="mb-6">
+      <div className="flex container justify-between mb-3">
+        <p className="">
           Tổng tiền đã thu:{' '}
           {money.formatVietnameseCurrency(calculateTotalAmount())}
         </p>
@@ -131,34 +89,46 @@ const ReceiptManagement = () => {
           Số ngày còn lại trong tháng: {getDateLeftInCurrentMonth()}
         </p>
       </div>
-      <div className="flex mb-4 justify-end">
-        <p className="align-middle mt-2 mr-2">Lọc theo tháng: </p>
-        <select
-          className="border border-gray-300 bg-white rounded mr-2 p-2"
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+
+      <div className="flex items-center justify-between mb-2">
+      <Tooltip
+          placement='top'
+          title="Nhấn để thay đổi mục tiêu"
         >
-          <option value="">Tháng</option>
-          {[...Array(12).keys()].map((_, i) => (
-            <option key={i} value={i + 1}>
-              {i + 1}
+        <p onClick={() => setCreateEarningTarget(true)} className="mb-6 cursor-pointer">
+          Mục tiêu: 30.000.000 VNĐ
+        </p>
+        </Tooltip>
+
+        <div className="flex items-center">
+          <p className="align-middle mr-2">Lọc theo tháng: </p>
+          <select
+            className="border border-gray-300 bg-white rounded mr-2 p-2"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          >
+            <option value="">Tháng</option>
+            {[...Array(12).keys()].map((_, i) => (
+              <option key={i} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+          <select
+            className="border border-gray-300 bg-white rounded p-2"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          >
+            <option className="bg-white" value="">
+              Năm
             </option>
-          ))}
-        </select>
-        <select
-          className="border border-gray-300 bg-white rounded p-2"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-        >
-          <option className="bg-white" value="">
-            Năm
-          </option>
-          {[...Array(10).keys()].map((_, i) => (
-            <option key={i} value={new Date().getFullYear() - i}>
-              {new Date().getFullYear() - i}
-            </option>
-          ))}
-        </select>
+            {[...Array(10).keys()].map((_, i) => (
+              <option key={i} value={new Date().getFullYear() - i}>
+                {new Date().getFullYear() - i}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="mt-4 overflow-x-auto mb-4">
@@ -228,6 +198,11 @@ const ReceiptManagement = () => {
         receipt={selectedReceipt}
         editReceipt={editReceipt}
         deleteReceipt={deleteReceipt}
+      />
+
+      <CreateEarningTargetModal
+        open={createEarningTarget}
+        setOpen={setCreateEarningTarget}
       />
     </div>
   );
