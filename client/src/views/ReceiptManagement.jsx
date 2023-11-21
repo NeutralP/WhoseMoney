@@ -4,63 +4,80 @@ import ReceiptManagementDeleteAlert from '~/features/ReceiptManagementDeleteAler
 import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 import ReceiptsDetailModal from '../features/Receipt/ReceiptsDetailModal';
+import axiosClient from '~/axios';
+
+const receipts_data = [
+  {
+    receipt_id: 1,
+    receipt_name: 'Lương hàng tháng',
+    receipt_source: 'Công ty ABC',
+    receipt_amount: 1000000,
+    time: '2023-10-02',
+  },
+  {
+    receipt_id: 2,
+    receipt_name: 'Bán phở',
+    receipt_source: 'Ăn uống',
+    receipt_amount: 500000,
+    time: '2023-10-05',
+  },
+  {
+    receipt_id: 3,
+    receipt_name: 'Lương hàng tháng',
+    receipt_source: 'Quán cà phê',
+    receipt_amount: 500000,
+    time: '2023-10-10',
+  },
+  {
+    receipt_id: 4,
+    receipt_name: 'Bán khoá học tiếng Nhật',
+    receipt_source: 'Công ty ABC',
+    receipt_amount: 500000,
+    time: '2023-11-12',
+  },
+  {
+    receipt_id: 5,
+    receipt_name: 'Bán áo',
+    receipt_source: 'Giải trí',
+    receipt_amount: 500000,
+    time: '2022-10-10',
+  },
+  {
+    receipt_id: 6,
+    receipt_name: 'Lương hàng tháng',
+    receipt_source: 'Công ty ABC',
+    receipt_amount: 500000,
+    time: '2022-10-12',
+  },
+];
 
 const ReceiptManagement = () => {
-  const receipts_data = [
-    {
-      receipt_id: 1,
-      receipt_name: 'Lương hàng tháng',
-      receipt_source: 'Công ty ABC',
-      receipt_amount: 1000000,
-      time: '2023-10-02',
-    },
-    {
-      receipt_id: 2,
-      receipt_name: 'Bán phở',
-      receipt_source: 'Ăn uống',
-      receipt_amount: 500000,
-      time: '2023-10-05',
-    },
-    {
-      receipt_id: 3,
-      receipt_name: 'Lương hàng tháng',
-      receipt_source: 'Quán cà phê',
-      receipt_amount: 500000,
-      time: '2023-10-10',
-    },
-    {
-      receipt_id: 4,
-      receipt_name: 'Bán khoá học tiếng Nhật',
-      receipt_source: 'Công ty ABC',
-      receipt_amount: 500000,
-      time: '2023-11-12',
-    },
-    {
-      receipt_id: 5,
-      receipt_name: 'Bán áo',
-      receipt_source: 'Giải trí',
-      receipt_amount: 500000,
-      time: '2022-10-10',
-    },
-    {
-      receipt_id: 6,
-      receipt_name: 'Lương hàng tháng',
-      receipt_source: 'Công ty ABC',
-      receipt_amount: 500000,
-      time: '2022-10-12',
-    },
-  ];
+  const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [receipts, setReceipts] = useState(receipts_data);
+  const [receipts, setReceipts] = useState([]);
   const [filteredReceipts, setFilteredReceipts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState({});
   const [receiptDetailModalOpen, setReceiptDetailModalOpen] = useState(false);
 
   useEffect(() => {
+    axiosClient
+      .get('/earning-money')
+      .then(({ data }) => {
+        setReceipts(data.data);
+        setFilteredReceipts(data.data);
+        setLoading(false);
+        // console.log(data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
     const newFilteredReceipts = receipts.filter((receipt) => {
-      const receiptDate = new Date(receipt.time);
+      const receiptDate = new Date(receipt.date);
       return (
         (selectedMonth ? receiptDate.getMonth() + 1 === selectedMonth : true) &&
         (selectedYear ? receiptDate.getFullYear() === selectedYear : true)
@@ -71,23 +88,34 @@ const ReceiptManagement = () => {
 
   const calculateTotalAmount = () => {
     return filteredReceipts.reduce((acc, receipt) => {
-      const amount = receipt.receipt_amount;
+      const amount = receipt.amount;
       return acc + amount;
     }, 0);
   };
 
   const addReceipt = (receipt) => {
-    setReceipts([...receipts, { ...receipt, receipt_id: receipts.length + 1 }]);
+    setReceipts([...receipts, { ...receipt }]);
     console.log(receipts);
+  };
+
+  const editReceipt = (receipt) => {
+    setReceipts(
+      receipts.map((item) => {
+        if (item.id === receipt.id) return receipt;
+        else return item;
+      })
+    );
   };
 
   const deleteReceipt = (receiptToDelete) => {
     setReceipts((prevReceipts) =>
-      prevReceipts.filter(
-        (receipt) => receipt.receipt_id !== receiptToDelete.receipt_id
-      )
+      prevReceipts.filter((receipt) => receipt.id !== receiptToDelete.id)
     );
   };
+
+  if (loading) {
+    return <>Loading... </>;
+  }
 
   return (
     <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
@@ -151,15 +179,15 @@ const ReceiptManagement = () => {
                   setSelectedReceipt(receipt);
                   setReceiptDetailModalOpen(true);
                 }}
-                key={receipt.receipt_id}
+                key={receipt.id}
                 className="border-b cursor-pointer"
               >
-                <td className="p-4">{receipt.receipt_name}</td>
-                <td className="p-4">{receipt.receipt_source}</td>
+                <td className="p-4">{receipt.name}</td>
+                <td className="p-4">{receipt.source}</td>
                 <td className="p-4">
-                  {money.formatVietnameseCurrency(receipt.receipt_amount)}
+                  {money.formatVietnameseCurrency(receipt.amount)}
                 </td>
-                <td className="p-4 ">{receipt.time}</td>
+                <td className="p-4 ">{receipt.date}</td>
                 <td
                   onClick={(e) => e.stopPropagation()}
                   className="p-4 flex items-center space-x-2"
@@ -187,6 +215,7 @@ const ReceiptManagement = () => {
       >
         Thêm khoản thu
       </button>
+
       <ReceiptManagementModal
         isOpen={isModalOpen}
         onSave={addReceipt}
@@ -197,6 +226,8 @@ const ReceiptManagement = () => {
         open={receiptDetailModalOpen}
         setOpen={setReceiptDetailModalOpen}
         receipt={selectedReceipt}
+        editReceipt={editReceipt}
+        deleteReceipt={deleteReceipt}
       />
     </div>
   );

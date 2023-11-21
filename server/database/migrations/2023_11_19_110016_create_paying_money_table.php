@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id')->index();
 
             $table->string('name');
-            $table->string('amount');
+            $table->bigInteger('amount');
             $table->string('date');
 
             $table->foreign('user_id')->references('id')->on('users');

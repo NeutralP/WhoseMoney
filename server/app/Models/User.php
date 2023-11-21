@@ -86,7 +86,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(SocialAccount::class);
     }
 
-    public function category(): HasMany
+    public function categories(): HasMany
     {
         return $this->hasMany(Category::class);
     }
@@ -96,7 +96,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(PayingMoney::class);
     }
 
-    public function balance(): HasMany
+    public function balances(): HasMany
     {
         return $this->hasMany(Balance::class);
     }
@@ -106,7 +106,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(EarningMoney::class);
     }
 
-    public function earningTarget(): HasMany
+    public function earningTargets(): HasMany
     {
         return $this->hasMany(EarningTarget::class);
     }
@@ -116,7 +116,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(SavingMoney::class);
     }
 
-    public function savingTarget(): HasMany
+    public function savingTargets(): HasMany
     {
         return $this->hasMany(SavingTarget::class);
     }

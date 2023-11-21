@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
+import axiosClient from '~/axios';
 
 const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -9,6 +10,10 @@ const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
   const handleOk = () => {
     deleteReceipt(receipt);
     setIsModalVisible(false);
+
+    axiosClient.delete(`/earning-money/${receipt.id}`).catch((error) => {
+      console.error(error);
+    });
   };
 
   const handleCancel = () => setIsModalVisible(false);
@@ -30,9 +35,7 @@ const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
         }} // Add margin to the Cancel button
         className="custom-modal"
       >
-        <p style={{ margin: '0 16px' }}>
-          Bạn có chắc chắn muốn xóa khoản thu này không?
-        </p>
+        <p>Bạn có chắc chắn muốn xóa khoản thu này không?</p>
       </Modal>
     </>
   );

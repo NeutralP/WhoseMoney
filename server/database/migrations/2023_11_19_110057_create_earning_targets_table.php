@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
 
-            $table->string('target');
+            $table->bigInteger('target');
             $table->integer('month');
 
             $table->foreign('user_id')->references('id')->on('users');
