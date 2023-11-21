@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
+import { FaTrashAlt } from "react-icons/fa";
 import axiosClient from '~/axios';
 
 const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
@@ -21,7 +22,7 @@ const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
   return (
     <>
       <Button onClick={showModal} type="primary" danger>
-        Xóa
+        <FaTrashAlt />
       </Button>
       <Modal
         title="Xóa khoản thu"

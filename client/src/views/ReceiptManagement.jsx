@@ -5,12 +5,13 @@ import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 import ReceiptsDetailModal from '../features/Receipt/ReceiptsDetailModal';
 import axiosClient from '~/axios';
+import { FaEye, FaEdit } from "react-icons/fa";
 import CreateEarningTargetModal from '~/features/EarningTarget/CreateEarningTargetModal';
-import { Tooltip } from 'antd';
+import { Tooltip, Button } from 'antd';
 
 const ReceiptManagement = () => {
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [receipts, setReceipts] = useState([]);
   const [filteredReceipts, setFilteredReceipts] = useState([]);
@@ -162,12 +163,18 @@ const ReceiptManagement = () => {
                   onClick={(e) => e.stopPropagation()}
                   className="p-4 flex items-center space-x-2"
                 >
-                  <button className="text-blue-500 hover:text-blue-700">
-                    View
-                  </button>
-                  <button className="text-green-500 hover:text-green-700">
-                    Edit
-                  </button>
+                  <Button
+                      onClick={() => {
+                        setSelectedReceipt(receipt);
+                        setReceiptDetailModalOpen(true);
+                      }}
+                      className='text-blue-500'
+                    >
+                    <FaEye />
+                  </Button>
+                  <Button>
+                    <FaEdit />
+                  </Button>
                   <ReceiptManagementDeleteAlert
                     receipt={receipt}
                     deleteReceipt={deleteReceipt}
