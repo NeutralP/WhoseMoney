@@ -9,7 +9,7 @@ const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  if (userToken) return <Navigate to="/receipts-detail" />;
+  if (userToken) return <Navigate to="/receipts-management" />;
 
   const handleSignIn = () => {
     axiosClient
