@@ -6,6 +6,8 @@ import { userStateContext } from '~/contexts/ContextProvider';
 import axiosClient from '~/axios';
 import useGlobalModalStore from '~/store/useGlobalModalStore';
 import ConfirmModal from './ConfirmModal';
+import { ToastContainer } from 'react-toastify';
+import Navbar from './Navbar';
 
 const MainLayout = () => {
   const [confirmModal] = useGlobalModalStore((state) => [state.confirmModal]);
@@ -38,7 +40,10 @@ const MainLayout = () => {
       ) : (
         <>
           <Sidebar />
-          <Outlet />
+          <div className="app-container">
+            <Navbar />
+            <Outlet />
+          </div>
         </>
       )}
 
@@ -49,6 +54,8 @@ const MainLayout = () => {
         handleCancel={confirmModal.handleCancel}
         handleOk={confirmModal.handleOk}
       />
+
+      <ToastContainer />
     </div>
   );
 };

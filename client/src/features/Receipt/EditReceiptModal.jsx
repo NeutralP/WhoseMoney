@@ -1,6 +1,6 @@
 import { DatePicker, Input, Modal } from 'antd';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axiosClient from '~/axios';
 import useGlobalModalStore from '~/store/useGlobalModalStore';
 import { objUtils } from '~/utils';
@@ -8,16 +8,21 @@ import { formatDate } from '~/utils/time';
 
 const EditReceiptModal = ({
   receipt,
-  newReceipt,
-  setNewReceipt,
+  setSelectedReceipt,
   editReceipt,
   open,
   setOpen,
 }) => {
+  const [newReceipt, setNewReceipt] = useState(receipt);
+
   const [setConfirmModal, resetConfirmModal] = useGlobalModalStore((state) => [
     state.setConfirmModal,
     state.resetConfirmModal,
   ]);
+
+  useEffect(() => {
+    setNewReceipt(receipt);
+  }, [receipt.id]);
 
   const handleCancel = () => {
     if (objUtils.compareObj(receipt, newReceipt)) {
@@ -39,6 +44,7 @@ const EditReceiptModal = ({
   const handleOk = () => {
     newReceipt.amount = Number(newReceipt.amount);
     setOpen(false);
+    setSelectedReceipt(newReceipt);
     editReceipt(newReceipt);
 
     axiosClient
@@ -56,6 +62,7 @@ const EditReceiptModal = ({
       onOk={handleOk}
       width={520}
       className="custom-modal"
+      zIndex={1002}
     >
       <div className="flex flex-col pt-6 pb-4">
         <div className="grid grid-cols-[120px_1fr] gap-6 items-center">

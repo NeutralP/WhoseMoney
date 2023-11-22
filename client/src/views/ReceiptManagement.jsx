@@ -5,9 +5,11 @@ import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 import ReceiptsDetailModal from '../features/Receipt/ReceiptsDetailModal';
 import axiosClient from '~/axios';
-import { FaEye, FaEdit } from "react-icons/fa";
+import { FaEye, FaEdit } from 'react-icons/fa';
 import CreateEarningTargetModal from '~/features/EarningTarget/CreateEarningTargetModal';
 import { Tooltip, Button } from 'antd';
+import EditReceiptModal from '~/features/Receipt/EditReceiptModal';
+import { toast } from 'react-toastify';
 
 const ReceiptManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -19,6 +21,7 @@ const ReceiptManagement = () => {
   const [selectedReceipt, setSelectedReceipt] = useState({});
   const [receiptDetailModalOpen, setReceiptDetailModalOpen] = useState(false);
   const [createEarningTarget, setCreateEarningTarget] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   useEffect(() => {
     axiosClient
@@ -54,7 +57,10 @@ const ReceiptManagement = () => {
 
   const addReceipt = (receipt) => {
     setReceipts([...receipts, { ...receipt }]);
-    console.log(receipts);
+    // console.log(receipts);
+    toast.success('Thêm khoản thu thành công.', {
+      autoClose: 1500,
+    });
   };
 
   const editReceipt = (receipt) => {
@@ -64,12 +70,18 @@ const ReceiptManagement = () => {
         else return item;
       })
     );
+    toast.success('Chỉnh sửa khoản thu thành công.', {
+      autoClose: 1500,
+    });
   };
 
   const deleteReceipt = (receiptToDelete) => {
     setReceipts((prevReceipts) =>
       prevReceipts.filter((receipt) => receipt.id !== receiptToDelete.id)
     );
+    toast.success('Xóa khoản thu thành công.', {
+      autoClose: 1500,
+    });
   };
 
   if (loading) {
@@ -92,13 +104,13 @@ const ReceiptManagement = () => {
       </div>
 
       <div className="flex items-center justify-between mb-2">
-      <Tooltip
-          placement='top'
-          title="Nhấn để thay đổi mục tiêu"
-        >
-        <p onClick={() => setCreateEarningTarget(true)} className="mb-6 cursor-pointer">
-          Mục tiêu: 30.000.000 VNĐ
-        </p>
+        <Tooltip placement="top" title="Nhấn để thay đổi mục tiêu">
+          <p
+            onClick={() => setCreateEarningTarget(true)}
+            className="mb-6 cursor-pointer"
+          >
+            Mục tiêu: 30.000.000 VNĐ
+          </p>
         </Tooltip>
 
         <div className="flex items-center">
@@ -146,10 +158,10 @@ const ReceiptManagement = () => {
           <tbody>
             {filteredReceipts.map((receipt) => (
               <tr
-                onClick={() => {
-                  setSelectedReceipt(receipt);
-                  setReceiptDetailModalOpen(true);
-                }}
+                // onClick={() => {
+                //   setSelectedReceipt(receipt);
+                //   setReceiptDetailModalOpen(true);
+                // }}
                 key={receipt.id}
                 className="border-b cursor-pointer"
               >
@@ -164,15 +176,20 @@ const ReceiptManagement = () => {
                   className="p-4 flex items-center space-x-2"
                 >
                   <Button
-                      onClick={() => {
-                        setSelectedReceipt(receipt);
-                        setReceiptDetailModalOpen(true);
-                      }}
-                      className='text-blue-500'
-                    >
+                    onClick={() => {
+                      setSelectedReceipt(receipt);
+                      setReceiptDetailModalOpen(true);
+                    }}
+                    className="text-blue-500"
+                  >
                     <FaEye />
                   </Button>
-                  <Button>
+                  <Button
+                    onClick={() => {
+                      setSelectedReceipt(receipt);
+                      setEditModalOpen(true);
+                    }}
+                  >
                     <FaEdit />
                   </Button>
                   <ReceiptManagementDeleteAlert
@@ -203,8 +220,16 @@ const ReceiptManagement = () => {
         open={receiptDetailModalOpen}
         setOpen={setReceiptDetailModalOpen}
         receipt={selectedReceipt}
-        editReceipt={editReceipt}
+        setEditModalOpen={setEditModalOpen}
         deleteReceipt={deleteReceipt}
+      />
+
+      <EditReceiptModal
+        open={editModalOpen}
+        receipt={selectedReceipt}
+        setSelectedReceipt={setSelectedReceipt}
+        setOpen={setEditModalOpen}
+        editReceipt={editReceipt}
       />
 
       <CreateEarningTargetModal

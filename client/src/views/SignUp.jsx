@@ -14,7 +14,7 @@ const SignUp = () => {
   const [birthDay, setBirthDay] = useState('');
   const [address, setAddress] = useState('');
 
-  if (userToken) return <Navigate to="/receipts-management" />;
+  if (userToken) return <Navigate to="/dashboard" />;
 
   const handleSignUp = () => {
     axiosClient
