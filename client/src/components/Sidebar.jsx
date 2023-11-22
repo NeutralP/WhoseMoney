@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineMenuUnfold } from 'react-icons/ai';
 import { useMediaQuery } from 'usehooks-ts';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '~/utils';
 import axiosClient from '~/axios';
 import { userStateContext } from '~/contexts/ContextProvider';
+import { MdDashboard } from 'react-icons/md';
 
 const Sidebar = ({}) => {
   const { setCurrentUser, setUserToken } = userStateContext();
@@ -120,19 +121,86 @@ const Sidebar = ({}) => {
           isMobile && 'w-0'
         )}
       >
-        <div role="button" onClick={handleLogOut}>
-          Logout
+        <div className="sidebar-item">
+          <div role="button" onClick={handleLogOut}>
+            Logout
+          </div>
+          <div
+            role="button"
+            className={cn(
+              'w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition',
+              isMobile && 'opacity-100'
+            )}
+            onClick={collapse}
+          >
+            <AiOutlineMenuUnfold className="w-6 h-6" />
+          </div>
         </div>
-        <div
-          role="button"
+
+        <Link
+          to="/dashboard"
           className={cn(
-            'w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition',
-            isMobile && 'opacity-100'
+            'sidebar-item',
+            pathname === '/dashboard' && 'sidebar-item--active'
           )}
-          onClick={collapse}
         >
-          <AiOutlineMenuUnfold className="w-6 h-6" />
-        </div>
+          <div className="flex items-center gap-3">
+            <MdDashboard className="icon" />
+            <p>Dashboard</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/"
+          className={cn(
+            'sidebar-item',
+            pathname === '/' && 'sidebar-item--active'
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <MdDashboard className="icon" />
+            <p>Quản lí danh mục</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/"
+          className={cn(
+            'sidebar-item',
+            pathname === '/' && 'sidebar-item--active'
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <MdDashboard className="icon" />
+            <p>Quản lí chi</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/receipts-management"
+          className={cn(
+            'sidebar-item',
+            pathname === '/receipts-management' && 'sidebar-item--active'
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <MdDashboard className="icon" />
+            <p>Quản lí thu</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/"
+          className={cn(
+            'sidebar-item',
+            pathname === '/' && 'sidebar-item--active'
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <MdDashboard className="icon" />
+            <p>Quản lí tiết kiệm</p>
+          </div>
+        </Link>
 
         <div
           onMouseDown={handleMouseDown}

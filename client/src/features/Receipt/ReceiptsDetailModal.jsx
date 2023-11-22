@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Modal } from 'antd';
 import useGlobalModalStore from '~/store/useGlobalModalStore';
-import EditReceiptModal from './EditReceiptModal';
 import { formatDate } from '~/utils/time';
 import { money, objUtils } from '~/utils';
 import axiosClient from '~/axios';
 
 const ReceiptsDetailModal = ({
   receipt,
-  editReceipt,
+  setEditModalOpen,
   deleteReceipt,
   open,
   setOpen,
@@ -18,15 +17,7 @@ const ReceiptsDetailModal = ({
     state.resetConfirmModal,
   ]);
 
-  const [editModalOpen, setEditModalOpen] = useState(false);
-
-  const [newReceipt, setNewReceipt] = useState(receipt);
-
-  useEffect(() => {
-    setNewReceipt(receipt);
-  }, [receipt.id]);
-
-  if (objUtils.isEmptyObject(newReceipt)) {
+  if (objUtils.isEmptyObject(receipt)) {
     return <></>;
   }
 
@@ -43,7 +34,7 @@ const ReceiptsDetailModal = ({
     >
       <div className="flex flex-col">
         <header className="text-xl font-medium flex items-center justify-center mt-2 mb-4">
-          {newReceipt?.name}
+          {receipt?.name}
           {/* Luong hang thang */}
         </header>
 
@@ -53,7 +44,7 @@ const ReceiptsDetailModal = ({
             Nguồn tiền
           </div>
           <div className="text-base text-center truncate">
-            {newReceipt?.source}
+            {receipt?.source}
             {/* Cong ty ABC */}
           </div>
 
@@ -62,7 +53,7 @@ const ReceiptsDetailModal = ({
             Số tiền
           </div>
           <div className="text-base text-center truncate">
-            {money.formatVietnameseCurrency(newReceipt?.amount)}
+            {money.formatVietnameseCurrency(receipt?.amount)}
             {/* 10.000.000 */}
           </div>
 
@@ -71,7 +62,7 @@ const ReceiptsDetailModal = ({
             Thời gian
           </div>
           <div className="text-base text-center truncate">
-            {formatDate(new Date(newReceipt?.date))}
+            {formatDate(new Date(receipt?.date))}
             {/* 01/10/2023 */}
           </div>
 
@@ -80,7 +71,7 @@ const ReceiptsDetailModal = ({
             Sô dư trước
           </div>
           <div className="text-base text-center truncate">
-            {/* {newReceipt?.before_balance} */}
+            {/* {receipt?.before_balance} */}
             10.000.000
           </div>
 
@@ -89,7 +80,7 @@ const ReceiptsDetailModal = ({
             Số dư sau
           </div>
           <div className="text-base text-center truncate">
-            {/* {newReceipt?.after_balance} */}
+            {/* {receipt?.after_balance} */}
             20.000.000
           </div>
         </div>
@@ -103,14 +94,14 @@ const ReceiptsDetailModal = ({
                 content: 'Bạn có chắc muốn xóa khoản thu này?',
                 handleCancel: () => resetConfirmModal(),
                 handleOk: () => {
-                  deleteReceipt(newReceipt);
+                  deleteReceipt(receipt);
                   resetConfirmModal();
                   setTimeout(() => {
                     setOpen(false);
                   }, 0);
 
                   axiosClient
-                    .delete(`/earning-money/${newReceipt.id}`)
+                    .delete(`/earning-money/${receipt.id}`)
                     .catch((error) => {
                       console.log(error);
                     });
@@ -131,15 +122,6 @@ const ReceiptsDetailModal = ({
           </Button>
         </footer>
       </div>
-
-      <EditReceiptModal
-        open={editModalOpen}
-        receipt={receipt}
-        newReceipt={newReceipt}
-        setNewReceipt={setNewReceipt}
-        setOpen={setEditModalOpen}
-        editReceipt={editReceipt}
-      />
     </Modal>
   );
 };

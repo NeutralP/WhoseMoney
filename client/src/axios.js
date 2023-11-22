@@ -19,7 +19,7 @@ export function add_axios_401_interceptor(routerObject) {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('TOKEN');
         routerObject.navigate('/sign-in');
-        return err;
+        return Promise.resolve(err);
       }
       throw err;
     }
