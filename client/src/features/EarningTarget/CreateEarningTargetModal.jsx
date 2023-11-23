@@ -1,22 +1,22 @@
 import { DatePicker, Input, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 
-const CreateEarningTargetModal = ({ open, setOpen, children }) => {
-  // const [newReceipt, setNewReceipt] = useState(receipt);
-
-  // useEffect(() => {
-  //   setNewReceipt(receipt);
-  // }, [receipt.id])
- 
-  // const [setTarget]
+const CreateEarningTargetModal = ({
+  earningTarget,
+  open,
+  setOpen,
+}) => {
+  const [newTarget, setNewTarget] = useState({});
 
   const handleCancel = () => {
     setOpen(false);
-  }
+  };
 
   const handleOk = () => {
+    newTarget.target = Number(newTarget.target);
     setOpen(false);
-  }
+
+  };
 
   return (
     <Modal
@@ -31,17 +31,18 @@ const CreateEarningTargetModal = ({ open, setOpen, children }) => {
     >
       <div className="flex flex-col pt-6 pb-4">
         <div className="grid grid-cols-[120px_1fr] gap-6 items-center">
-          {/* Name */}
-          <div className="text-base font-medium truncate">
-            Mục tiêu
-          </div>
+          {/* Amount */}
+          <div className="text-base font-medium truncate">Mục tiêu</div>
           <div>
-            <Input placeholder="Enter name here" />
+            <Input
+              placeholder="Enter amount here"
+              value={newTarget.target}
+              onChange={(e) =>
+                setNewTarget({ newTarget, target: e.target.value })
+              }
+            />
           </div>
-
-          <div className="text-base font-medium truncate">
-            Thời gian
-          </div>
+          <div className="text-base font-medium truncate">Thời gian</div>
           <div className="text-base truncate">
             {/* {receipt.date} */}
             10/2023
