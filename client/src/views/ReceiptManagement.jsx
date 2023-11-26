@@ -10,6 +10,7 @@ import CreateEarningTargetModal from '~/features/EarningTarget/CreateEarningTarg
 import { Tooltip, Button } from 'antd';
 import EditReceiptModal from '~/features/Receipt/EditReceiptModal';
 import { toast } from 'react-toastify';
+import ProgressBar from '~/features/EarningTarget/ProgressBar';
 
 const ReceiptManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -20,8 +21,21 @@ const ReceiptManagement = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState({});
   const [receiptDetailModalOpen, setReceiptDetailModalOpen] = useState(false);
-  const [createEarningTarget, setCreateEarningTarget] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [createEarningTarget, setCreateEarningTarget] = useState(false);
+  const [target, setTarget] = useState('10000000');
+  const [percentage, setPercentage] = useState(70);
+  
+  const testData = [{ bgcolor: '#1677ff', completed: percentage}];
+
+  const calculatePercentage = () => {
+    if (calculateTotalAmount() >= 0 && target >= 0) {
+      const result = (calculateTotalAmount() / target) * 100;
+      setPercentage(result.toFixed(2)); // Làm tròn đến 2 chữ số thập phân
+    } else {
+      setPercentage(null);
+    }    
+  };
 
   useEffect(() => {
     axiosClient
@@ -84,6 +98,10 @@ const ReceiptManagement = () => {
     });
   };
 
+  function handleTarget() {
+    console.log(target);
+  }
+
   if (loading) {
     return <>Loading... </>;
   }
@@ -103,16 +121,31 @@ const ReceiptManagement = () => {
         </p>
       </div>
 
-      <div className="flex items-center justify-between mb-2">
-        <Tooltip placement="top" title="Nhấn để thay đổi mục tiêu">
-          <p
-            onClick={() => setCreateEarningTarget(true)}
-            className="mb-6 cursor-pointer"
-          >
-            Mục tiêu: 30.000.000 VNĐ
-          </p>
-        </Tooltip>
+      <div className="flex items-center justify-between mb-2" >
+        <div>
+          <Tooltip placement="top" title="Nhấn để thay đổi mục tiêu">
+            <p
+              onClick={() => {
+                setCreateEarningTarget(true);
+                handleTarget();
+              }}
+              className="mb-6 cursor-pointer"
+            >
+              Mục tiêu: {money.formatVietnameseCurrency(target)}
+            </p>
+            
+          </Tooltip>
+          <div style={{width: '200px'}}>
+            {testData.map((item, idx) => (
+              <ProgressBar
+                key={idx}
+                bgcolor={item.bgcolor}
+                completed={item.completed}
 
+              />
+            ))}
+          </div>
+        </div>
         <div className="flex items-center">
           <p className="align-middle mr-2">Lọc theo tháng: </p>
           <select
@@ -143,7 +176,6 @@ const ReceiptManagement = () => {
           </select>
         </div>
       </div>
-
       <div className="mt-4 overflow-x-auto mb-4">
         <table className="w-full">
           <thead className="bg-gray-200 text-left text-gray-600">
@@ -234,6 +266,7 @@ const ReceiptManagement = () => {
 
       <CreateEarningTargetModal
         open={createEarningTarget}
+        setTarget={setTarget}
         setOpen={setCreateEarningTarget}
       />
     </div>
