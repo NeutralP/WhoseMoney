@@ -2,21 +2,26 @@ import { DatePicker, Input, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 const CreateEarningTargetModal = ({
-  earningTarget,
   open,
+  setTarget,
   setOpen,
 }) => {
-  const [newTarget, setNewTarget] = useState({});
+
+  const [selectTarget, setSelectTarget] = useState('10000000');
 
   const handleCancel = () => {
     setOpen(false);
+    console.log("Cancel");
   };
 
   const handleOk = () => {
-    newTarget.target = Number(newTarget.target);
     setOpen(false);
-
+    setTarget(selectTarget);
   };
+
+  const handleChange = () => {
+    console.log(selectTarget); 
+  }
 
   return (
     <Modal
@@ -36,10 +41,8 @@ const CreateEarningTargetModal = ({
           <div>
             <Input
               placeholder="Enter amount here"
-              value={newTarget.target}
-              onChange={(e) =>
-                setNewTarget({ newTarget, target: e.target.value })
-              }
+              onClick={handleChange}
+              onChange={(e) => setSelectTarget(e.target.value)}
             />
           </div>
           <div className="text-base font-medium truncate">Thời gian</div>

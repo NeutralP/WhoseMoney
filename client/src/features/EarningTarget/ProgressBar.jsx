@@ -4,6 +4,7 @@ const ProgressBar = (props) => {
     const { bgcolor, completed } = props;
   
     const containerStyles = {
+      display: 'table',
       height: 15,
       width: '100%',
       backgroundColor: "#e0e0de",
@@ -12,6 +13,7 @@ const ProgressBar = (props) => {
     }
   
     const fillerStyles = {
+      display: 'table',
       height: '100%',
       width: `${completed}%`,
       backgroundColor: bgcolor,
@@ -20,9 +22,10 @@ const ProgressBar = (props) => {
     }
   
     const labelStyles = {
-      padding: 5,
+      marginRight: 20,
       color: 'white',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      //height: '80%'
     }
   
     return (

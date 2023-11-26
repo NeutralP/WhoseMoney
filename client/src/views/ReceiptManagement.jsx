@@ -22,11 +22,20 @@ const ReceiptManagement = () => {
   const [selectedReceipt, setSelectedReceipt] = useState({});
   const [receiptDetailModalOpen, setReceiptDetailModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [createEarningTarget, setCreateEarningTarget] = useState(false);
+  const [target, setTarget] = useState('10000000');
+  const [percentage, setPercentage] = useState(70);
+  
+  const testData = [{ bgcolor: '#1677ff', completed: percentage}];
 
-  const [createEarningTarget, setCreateEarningTarget] = useState(false)
-  const [selectTarget, setSelectTarget] = useState({});
-
-  const testData = [{ bgcolor: '#00695c', completed: 60 }];
+  const calculatePercentage = () => {
+    if (calculateTotalAmount() >= 0 && target >= 0) {
+      const result = (calculateTotalAmount() / target) * 100;
+      setPercentage(result.toFixed(2)); // Làm tròn đến 2 chữ số thập phân
+    } else {
+      setPercentage(null);
+    }    
+  };
 
   useEffect(() => {
     axiosClient
@@ -80,10 +89,6 @@ const ReceiptManagement = () => {
     });
   };
 
-  const changeTarget = (event) => {
-    setSelectTarget(event);
-  };
-
   const deleteReceipt = (receiptToDelete) => {
     setReceipts((prevReceipts) =>
       prevReceipts.filter((receipt) => receipt.id !== receiptToDelete.id)
@@ -92,6 +97,10 @@ const ReceiptManagement = () => {
       autoClose: 1500,
     });
   };
+
+  function handleTarget() {
+    console.log(target);
+  }
 
   if (loading) {
     return <>Loading... </>;
@@ -112,25 +121,27 @@ const ReceiptManagement = () => {
         </p>
       </div>
 
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2" >
         <div>
           <Tooltip placement="top" title="Nhấn để thay đổi mục tiêu">
             <p
               onClick={() => {
                 setCreateEarningTarget(true);
-                setSelectTarget(target);
+                handleTarget();
               }}
               className="mb-6 cursor-pointer"
             >
-              Mục tiêu: {money.formatVietnameseCurrency(calculateTotalAmount())}
+              Mục tiêu: {money.formatVietnameseCurrency(target)}
             </p>
+            
           </Tooltip>
-          <div>
+          <div style={{width: '200px'}}>
             {testData.map((item, idx) => (
               <ProgressBar
                 key={idx}
                 bgcolor={item.bgcolor}
                 completed={item.completed}
+
               />
             ))}
           </div>
@@ -255,7 +266,7 @@ const ReceiptManagement = () => {
 
       <CreateEarningTargetModal
         open={createEarningTarget}
-        earningTarget={selectTarget}
+        setTarget={setTarget}
         setOpen={setCreateEarningTarget}
       />
     </div>
