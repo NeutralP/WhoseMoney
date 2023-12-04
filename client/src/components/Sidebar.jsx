@@ -164,10 +164,10 @@ const Sidebar = ({}) => {
         </Link>
 
         <Link
-          to="/"
+          to="/expenses-management"
           className={cn(
             'sidebar-item',
-            pathname === '/' && 'sidebar-item--active'
+            pathname === '/expenses-management' && 'sidebar-item--active'
           )}
         >
           <div className="flex items-center gap-3">
