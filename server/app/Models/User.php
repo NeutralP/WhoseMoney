@@ -48,13 +48,13 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $appends = [
-        'prevBalance',
-        'curBalance',
+        'prev_balance',
+        'cur_balance',
     ];
 
-    protected function __construct()
-    {
-    }
+    // protected function __construct()
+    // {
+    // }
 
     protected function prevBalance(): Attribute
     {
