@@ -3,7 +3,8 @@ import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
 import axiosClient from '~/axios';
 import { FaEye, FaEdit } from 'react-icons/fa';
-import { Button } from 'antd';
+import { Button, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 import ExpenseManagementDeleteAlert from '~/features/Expense/ExpenseManagementDeleteAlert';
 import usePayingMoneyStore from '~/store/usePayingMoneyStore';
@@ -28,7 +29,18 @@ const ExpenseManagement = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [expenses, setExpenses] = useState([]);
   const [filteredExpeneses, setFilteredExpenses] = useState([]);
+  const [searchInput, setSearchInput] = useState('');
 
+  const handleSearchInput = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    const results = expenses.filter((item) =>
+      item.name.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setFilteredExpenses(results);
+  };
   // Edit | Add
   const [modalOpen, setModalOpen] = useState({
     state: false,
@@ -93,7 +105,21 @@ const ExpenseManagement = () => {
       </div>
 
       <div className="flex items-center justify-between mb-2">
-        <div></div>
+        <div>
+          <form>
+            <Input
+              className="border border-solid mr-2 focus:border focus:border-solid border-gray-300 rounded w-full p-1"
+              type="text"
+              placeholder="Tìm kiếm khoản chi..."
+              value={searchInput}
+              onChange={handleSearchInput}
+              style={{ width: 300 }}
+            />
+            <Button onClick={handleSearchSubmit} className="text-blue-500">
+              <SearchOutlined className="align-baseline	" />
+            </Button>
+          </form>
+        </div>
         <div className="flex items-center">
           <p className="align-middle mr-2">Lọc theo tháng: </p>
           <select
