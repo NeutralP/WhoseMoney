@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('category_id')->index();
 
-            $table->string('limit');
+            $table->bigInteger('limit');
             $table->integer('month');
+            $table->integer('year');
 
             $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();

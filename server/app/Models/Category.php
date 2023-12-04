@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Category extends Model
 {
@@ -14,18 +17,58 @@ class Category extends Model
     protected $table = 'categories';
 
     protected $fillable = [
-        'category_name',
+        'name',
         'user_id',
     ];
+
+    protected $appends = [
+        'payLimit',
+        'totalPay',
+        'payList',
+    ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($category) {
+            $category->payingLimit()->create([
+                'limit' => 0,
+                'month' => Carbon::now()->month,
+                'year' => Carbon::now()->year,
+            ]);
+        });
+    }
+
+    protected function payLimit(): Attribute
+    {
+        return new Attribute(function () {
+            return $this->payingLimit()->first();
+        });
+    }
+
+    protected function totalPay(): Attribute
+    {
+        return new Attribute(function () {
+            return $this->payingMoney()->sum('amount');
+        });
+    }
+
+    protected function payList(): Attribute
+    {
+        return new Attribute(function () {
+            return $this->payingMoney()->get();
+        });
+    }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function payingLimit(): HasMany
+    public function payingLimit(): HasOne
     {
-        return $this->hasMany(PayingLimit::class);
+        return $this->hasOne(PayingLimit::class);
     }
 
     public function payingMoney(): HasMany
