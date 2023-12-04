@@ -6,3 +6,6 @@
 .vscode
 
 /.data
+
+client/yarn.lock
+server/composer.lock
