@@ -4,6 +4,7 @@ import MainLayout from './components/MainLayout.jsx';
 import SignIn from './views/SignIn.jsx';
 import SignUp from './views/SignUp.jsx';
 import ReceiptManagement from './views/ReceiptManagement.jsx';
+import ExpenseManagement from './views/ExpenseManagement.jsx';
 import Dashboard from './views/Dashboard.jsx';
 import Profile from './views/Profile.jsx';
 import NotFound404 from './views/NotFound404.jsx';
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: '/receipts-management',
         element: <ReceiptManagement />,
+      },
+      {
+        path: '/expenses-management',
+        element: <ExpenseManagement />,
       },
       {
         path: '*',
