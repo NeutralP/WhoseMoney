@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -46,7 +47,28 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = [];
+    protected $appends = [
+        'prevBalance',
+        'curBalance',
+    ];
+
+    protected function __construct()
+    {
+    }
+
+    protected function prevBalance(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->balances()->where('name', 'prev_balance')->first(),
+        );
+    }
+
+    protected function curBalance(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->balances()->where('name', 'cur_balance')->first(),
+        );
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -75,8 +97,17 @@ class User extends Authenticatable implements JWTSubject
 
         // Fires an event everytime a new user is created
         // Eloquent model event
-        // static::created(function ($user) {
-        // });
+        static::created(function ($user) {
+            $user->balances()->create([
+                'name' => 'prev_balance',
+                'amount' => 0,
+            ]);
+
+            $user->balances()->create([
+                'name' => 'cur_balance',
+                'amount' => 0,
+            ]);
+        });
     }
 
     // Profile related relations

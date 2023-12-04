@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EarningMoneyController;
 use App\Http\Controllers\EarningTargetController;
+use App\Http\Controllers\PayingMoneyController;
 use App\Http\Controllers\SocialiteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +60,29 @@ Route::controller(EarningTargetController::class)->group(function () {
         Route::post('/', 'store');
         Route::patch('/{targetId}', 'update');
         Route::delete('/{targetId}', 'delete');
+    });
+});
+
+// PayingMoney handlers
+Route::controller(PayingMoneyController::class)->group(function () {
+    Route::prefix('paying-money')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{payingMoneyId}', 'show');
+        Route::post('/', 'store');
+        Route::patch('/{payingMoneyId}', 'update');
+        Route::delete('/{payingMoneyId}', 'destroy');
+    });
+});
+
+// Category handlers
+Route::controller(CategoryController::class)->group(function () {
+    Route::prefix('categories')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('/{categoryId}', 'show');
+        Route::patch('/{categoryId}', 'update');
+        Route::patch('/{categoryId}/pay_limit', 'updatePayLimit');
+        Route::delete('/{categoryId}', 'destroy');
     });
 });
 

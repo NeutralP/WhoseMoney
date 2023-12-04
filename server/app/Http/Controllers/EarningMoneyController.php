@@ -43,6 +43,16 @@ class EarningMoneyController extends Controller
             $new_earning = $user->earningMoney()->create($data);
 
             if ($new_earning) {
+                $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
+                $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
+
+                $prev_balance->update([
+                    'amount' => $cur_balance->amount,
+                ]);
+                $cur_balance->update([
+                    'amount' => $cur_balance->amount + $new_earning->amount,
+                ]);
+
                 return response()->json([
                     'data' => $new_earning,
                     'message' => 'Created',
@@ -70,7 +80,19 @@ class EarningMoneyController extends Controller
             $earning = $user->earningMoney()->findOrFail($earningId);
 
             if ($earning) {
+                $old_amount = $earning->amount;
+                $new_amount = $request->amount;
                 $earning->update($data);
+
+                $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
+                $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
+
+                $prev_balance->update([
+                    'amount' => $cur_balance->amount,
+                ]);
+                $cur_balance->update([
+                    'amount' => $cur_balance->amount - $old_amount + $new_amount,
+                ]);
 
                 return response()->json([
                     'data' => $earning,
@@ -97,6 +119,16 @@ class EarningMoneyController extends Controller
             $earning = $user->earningMoney()->findOrFail($earningId);
 
             if ($earning) {
+                $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
+                $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
+
+                $prev_balance->update([
+                    'amount' => $cur_balance->amount,
+                ]);
+                $cur_balance->update([
+                    'amount' => $cur_balance->amount - $earning->amount,
+                ]);
+
                 $earning->delete();
 
                 return response()->json([

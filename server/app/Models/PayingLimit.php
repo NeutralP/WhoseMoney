@@ -16,6 +16,7 @@ class PayingLimit extends Model
         'user_id',
         'limit',
         'month',
+        'year',
     ];
 
     public function category(): BelongsTo
