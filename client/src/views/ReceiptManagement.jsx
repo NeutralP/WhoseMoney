@@ -11,6 +11,7 @@ import { Tooltip, Button } from 'antd';
 import EditReceiptModal from '~/features/Receipt/EditReceiptModal';
 import { toast } from 'react-toastify';
 import ProgressBar from '~/features/EarningTarget/ProgressBar';
+import Fallback from '~/components/Fallback';
 
 const ReceiptManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -25,8 +26,8 @@ const ReceiptManagement = () => {
   const [createEarningTarget, setCreateEarningTarget] = useState(false);
   const [target, setTarget] = useState('10000000');
   const [percentage, setPercentage] = useState(70);
-  
-  const testData = [{ bgcolor: '#1677ff', completed: percentage}];
+
+  const testData = [{ bgcolor: '#1677ff', completed: percentage }];
 
   const calculatePercentage = () => {
     if (calculateTotalAmount() >= 0 && target >= 0) {
@@ -34,7 +35,7 @@ const ReceiptManagement = () => {
       setPercentage(result.toFixed(2)); // Làm tròn đến 2 chữ số thập phân
     } else {
       setPercentage(null);
-    }    
+    }
   };
 
   useEffect(() => {
@@ -103,7 +104,7 @@ const ReceiptManagement = () => {
   }
 
   if (loading) {
-    return <>Loading... </>;
+    return <Fallback />;
   }
 
   return (
@@ -121,7 +122,7 @@ const ReceiptManagement = () => {
         </p>
       </div>
 
-      <div className="flex items-center justify-between mb-2" >
+      <div className="flex items-center justify-between mb-2">
         <div>
           <Tooltip placement="top" title="Nhấn để thay đổi mục tiêu">
             <p
@@ -133,15 +134,13 @@ const ReceiptManagement = () => {
             >
               Mục tiêu: {money.formatVietnameseCurrency(target)}
             </p>
-            
           </Tooltip>
-          <div style={{width: '200px'}}>
+          <div style={{ width: '200px' }}>
             {testData.map((item, idx) => (
               <ProgressBar
                 key={idx}
                 bgcolor={item.bgcolor}
                 completed={item.completed}
-
               />
             ))}
           </div>
@@ -188,13 +187,13 @@ const ReceiptManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredReceipts.map((receipt) => (
+            {filteredReceipts.map((receipt, index) => (
               <tr
                 // onClick={() => {
                 //   setSelectedReceipt(receipt);
                 //   setReceiptDetailModalOpen(true);
                 // }}
-                key={receipt.id}
+                key={receipt.id + index}
                 className="border-b cursor-pointer"
               >
                 <td className="p-4">{receipt.name}</td>

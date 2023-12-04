@@ -107,9 +107,10 @@ const EditReceiptModal = ({
           <div>
             <DatePicker
               style={{ width: '100%' }}
-              onChange={(date) =>
-                setNewReceipt({ ...newReceipt, date: formatDate(date['$d']) })
-              }
+              onChange={(date) => {
+                console.log(date);
+                setNewReceipt({ ...newReceipt, date: formatDate(date['$d']) });
+              }}
               value={dayjs(new Date(newReceipt.date))}
             />
           </div>

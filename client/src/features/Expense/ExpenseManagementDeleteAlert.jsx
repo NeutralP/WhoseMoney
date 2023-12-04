@@ -12,7 +12,7 @@ const ExpenseManagementDeleteAlert = ({ expense, deleteExpense }) => {
     deleteExpense(expense);
     setIsModalVisible(false);
 
-    // axiosClient.delete(`/earning-money/${expense.id}`).catch((error) => {
+    // axiosClient.delete(`/paying-money/${expense.id}`).catch((error) => {
     //   console.error(error);
     // });
   };
