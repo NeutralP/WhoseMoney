@@ -102,11 +102,9 @@ const CategoryManagement = () => {
   //   const [categories, setCategories] = useState([]);
 
   return (
-    <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold text-gray-700 mb-4">
-        Quản lý danh mục
-      </h2>
-      <div className="flex container justify-between mb-9 mt-9">
+    <div className="mt-8 flex flex-col overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
+      <h2 className="text-2xl font-bold text-gray-700">Quản lý danh mục</h2>
+      <div className="flex container justify-between mb-9 mt-5">
         <button
           onClick={() => setModalOpen(true)}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right rounded"
@@ -143,7 +141,7 @@ const CategoryManagement = () => {
           </select>
         </div>
       </div>
-      <div className="flex flex-wrap justify-start gap-x-10 gap-y-24 overflow-scroll max-h-full">
+      <div className="flex-1 min-h-0 w-full flex flex-wrap gap-x-10 gap-y-12 overflow-y-auto px-6 pb-6 pt-1">
         {categories.map((category) => (
           <CategoryCard key={category.id} category={category} />
         ))}
