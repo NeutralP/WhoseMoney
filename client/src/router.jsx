@@ -8,6 +8,7 @@ import ExpenseManagement from './views/ExpenseManagement.jsx';
 import Dashboard from './views/Dashboard.jsx';
 import Profile from './views/Profile.jsx';
 import NotFound404 from './views/NotFound404.jsx';
+import CategoryManagement from './views/CategoryManagement.jsx';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: '/expenses-management',
         element: <ExpenseManagement />,
+      },
+      {
+        path: '/category-management',
+        element: <CategoryManagement />,
       },
       {
         path: '*',
