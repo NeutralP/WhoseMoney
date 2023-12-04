@@ -151,7 +151,7 @@ const Sidebar = ({}) => {
         </Link>
 
         <Link
-          to="/"
+          to="/category-management"
           className={cn(
             'sidebar-item',
             pathname === '/' && 'sidebar-item--active'
