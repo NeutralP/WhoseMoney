@@ -6,7 +6,7 @@ const usePayingMoneyStore = create((set) => ({
   payingMoney: [],
   setPayingMoney: (payingMoney) => set({ payingMoney }),
 
-  fetchingPayingMoney: true,
+  fetchingPayingMoney: false,
   setFetchingPayingMoney: (fetchingPayingMoney) => set({ fetchingPayingMoney }),
 
   fetchPayingMoney: () => {

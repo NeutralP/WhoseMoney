@@ -1,8 +1,10 @@
-import { Input } from 'antd';
+import { DatePicker, Input, Modal, Select } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { userStateContext } from '~/contexts/ContextProvider';
+import useCategoryStore from '~/store/useCategoryStore';
 import usePayingMoneyStore from '~/store/usePayingMoneyStore';
+import { formatDate } from '~/utils/time';
 
 // Use for both add and edit
 const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
@@ -12,12 +14,21 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
     (state) => [state.udpatePayingMoney, state.createNewPayingMoney]
   );
 
+  const [categories] = useCategoryStore((state) => [state.categories]);
+
   const [newPayingMoney, setNewPayingMoney] = useState({
     name: '',
-    amount: '',
+    amount: '0',
     category_id: '',
     date: new Date(),
   });
+
+  const categoriesOptions = useMemo(() => {
+    return categories.map((category) => ({
+      label: category.name,
+      value: category.id,
+    }));
+  }, [categories]);
 
   useEffect(() => {
     if (type === 'edit') {
@@ -54,18 +65,19 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
   return (
     <Modal
       open={open}
-      onClose={() => setOpen(false)}
+      onCancel={() => setOpen(false)}
       title={type === 'add' ? 'Add new paying money' : 'Edit paying money'}
       width={525}
       centered
       onOk={handleOk}
+      className="custom-modal"
     >
-      <div className="grid grid-cols-[120px_1fr] gap-y-3 items-center">
+      <div className="py-2 grid grid-cols-[120px_1fr] gap-y-4 items-center">
         {type === 'add' && (
           <>
-            <p className="font-medium">Số dư trước:</p>
+            <p className="text-base font-medium">Số dư trước:</p>
             <p>{currentUser.cur_balance}</p>
-            <p className="font-medium">Số dư sau:</p>
+            <p className="text-base font-medium">Số dư sau:</p>
             <p>{currentUser.cur_balance + parseInt(newPayingMoney.amount)}</p>
           </>
         )}
@@ -76,6 +88,16 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
           value={newPayingMoney.name}
           onChange={(e) =>
             setNewPayingMoney({ ...newPayingMoney, name: e.target.value })
+          }
+        />
+        <label className="text-base font-medium">Danh mục:</label>
+        <Select
+          allowClear
+          style={{ width: '100%' }}
+          placeholder="Select category"
+          options={categoriesOptions}
+          onChange={(value) =>
+            setNewPayingMoney({ ...newPayingMoney, category_id: value })
           }
         />
         <label className="text-base font-medium">Số tiền:</label>
@@ -90,12 +112,13 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
         <label className="text-base font-medium">Ngày:</label>
         <DatePicker
           style={{ width: '100%' }}
-          onChange={(date) =>
+          onChange={(date) => {
+            console.log(date);
             setNewPayingMoney({
               ...newPayingMoney,
               date: formatDate(date['$d']),
-            })
-          }
+            });
+          }}
           value={dayjs(new Date(newPayingMoney.date))}
         />
       </div>

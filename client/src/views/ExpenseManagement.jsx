@@ -6,43 +6,47 @@ import { FaEye, FaEdit } from 'react-icons/fa';
 import { Button } from 'antd';
 import { toast } from 'react-toastify';
 import ExpenseManagementDeleteAlert from '~/features/Expense/ExpenseManagementDeleteAlert';
+import usePayingMoneyStore from '~/store/usePayingMoneyStore';
+import Fallback from '~/components/Fallback';
+import PayingMoneyModal from '~/features/PayingMoney/PayingMoneyModal';
+import useCategoryStore from '~/store/useCategoryStore';
 
 const ExpenseManagement = () => {
+  const [payingMoney, fetchingPayingMoney, fetchPayingMoney] =
+    usePayingMoneyStore((state) => [
+      state.payingMoney,
+      state.fetchingPayingMoney,
+      state.fetchPayingMoney,
+    ]);
+
+  const [fetchingCategories, fetchCategories] = useCategoryStore((state) => [
+    state.fetchingCategories,
+    state.fetchCategories,
+  ]);
+
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [expenses, setExpenses] = useState([
-    {
-      id: 1,
-      name: 'Khoản chi 1',
-      category: 'Danh mục 1',
-      amount: 100000,
-      date: '2023-12-20',
-    },
-    {
-      id: 2,
-      name: 'Khoản chi 2',
-      category: 'Danh mục 2',
-      amount: 20000,
-      date: '2023-12-20',
-    },
-    {
-      id: 3,
-      name: 'Khoản chi 3',
-      category: 'Danh mục 3',
-      amount: 5000000,
-      date: '2023-12-20',
-    },
-  ]);
+  const [expenses, setExpenses] = useState([]);
   const [filteredExpeneses, setFilteredExpenses] = useState([]);
 
-  const deleteExpense = (expenseToDelete) => {
-    setExpenses((prevExpenses) =>
-      prevExpenses.filter((expense) => expense.id !== expenseToDelete.id)
-    );
-    toast.success('Xóa khoản chi thành công.', {
-      autoClose: 1500,
-    });
-  };
+  // Edit | Add
+  const [modalOpen, setModalOpen] = useState({
+    state: false,
+    type: 'add',
+    selectedPayingMoney: null,
+  });
+
+  useEffect(() => {
+    fetchPayingMoney();
+  }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    setExpenses(payingMoney);
+  }, [payingMoney]);
 
   useEffect(() => {
     const newFilteredExpenses = expenses.filter((expense) => {
@@ -55,12 +59,23 @@ const ExpenseManagement = () => {
     setFilteredExpenses(newFilteredExpenses);
   }, [expenses, selectedMonth, selectedYear]);
 
+  const deleteExpense = (expenseToDelete) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.filter((expense) => expense.id !== expenseToDelete.id)
+    );
+    toast.success('Xóa khoản chi thành công.', {
+      autoClose: 1500,
+    });
+  };
+
   const calculateTotalAmount = () => {
     return filteredExpeneses.reduce((acc, receipt) => {
       const amount = receipt.amount;
       return acc + amount;
     }, 0);
   };
+
+  if (fetchingPayingMoney || fetchingCategories) return <Fallback />;
 
   return (
     <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
@@ -151,11 +166,23 @@ const ExpenseManagement = () => {
       </div>
 
       <button
-        onClick={() => setModalOpen(true)}
+        onClick={() =>
+          setModalOpen({
+            ...modalOpen,
+            state: true,
+          })
+        }
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded"
       >
         Thêm khoản chi
       </button>
+
+      <PayingMoneyModal
+        type={modalOpen.type}
+        open={modalOpen.state}
+        setOpen={(state) => setModalOpen({ ...modalOpen, state })}
+        payingMoneyData={modalOpen.selectedPayingMoney}
+      />
     </div>
   );
 };
