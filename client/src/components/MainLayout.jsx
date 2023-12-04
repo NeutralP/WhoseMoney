@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import '~/styles/MainLayout.scss';
 import { userStateContext } from '~/contexts/ContextProvider';
 import axiosClient from '~/axios';
@@ -10,9 +10,10 @@ import { ToastContainer } from 'react-toastify';
 import Navbar from './Navbar';
 
 const MainLayout = () => {
+  const navigate = useNavigate();
   const [confirmModal] = useGlobalModalStore((state) => [state.confirmModal]);
 
-  const { setCurrentUser, userToken } = userStateContext();
+  const { setCurrentUser, userToken, setUserToken } = userStateContext();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,13 +22,25 @@ const MainLayout = () => {
       axiosClient
         .get('/auth/me')
         .then(({ data }) => {
-          const userInfo = data.data;
-          setCurrentUser(userInfo);
+          if (data.message === 'Unauthorized') {
+            navigate('/sign-in');
+          } else {
+            const userInfo = data.data;
+            setCurrentUser(userInfo);
+          }
         })
-        .catch((err) => console.error(err))
+        .catch((err) => {
+          if (err.response && err.response.status === 401) {
+            localStorage.removeItem('TOKEN');
+            setUserToken(null);
+          }
+          console.error(err);
+        })
         .finally(() => setLoading(false));
+    } else {
+      navigate('/sign-in');
     }
-  }, []);
+  }, [userToken]);
 
   if (!userToken) {
     return <Navigate to="/sign-in" />;
