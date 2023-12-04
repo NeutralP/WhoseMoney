@@ -59,14 +59,20 @@ class User extends Authenticatable implements JWTSubject
     protected function prevBalance(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->balances()->where('name', 'prev_balance')->first(),
+            get: fn () => $this->balances()
+                ->where('name', 'prev_balance')
+                ->first()
+                ->amount,
         );
     }
 
     protected function curBalance(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->balances()->where('name', 'cur_balance')->first(),
+            get: fn () => $this->balances()
+                ->where('name', 'cur_balance')
+                ->first()
+                ->amount,
         );
     }
 

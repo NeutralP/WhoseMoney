@@ -60,7 +60,7 @@ const EditReceiptModal = ({
       centered
       onCancel={handleCancel}
       onOk={handleOk}
-      width={520}
+      width={525}
       className="custom-modal"
       zIndex={1002}
     >
