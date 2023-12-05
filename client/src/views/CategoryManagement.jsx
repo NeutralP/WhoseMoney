@@ -3,6 +3,7 @@ import Fallback from '~/components/Fallback';
 import CategoryCard from '~/features/CategoryCard/CategoryCard';
 import ViewCategoryDetailModal from '~/features/CategoryDetail/ViewCategoryDetailModal';
 import CategoryManagementModal from '~/features/CategoryManagementModal/CategoryManagementModal';
+import NoData from '~/features/NoData/NoData';
 import useCategoryStore from '~/store/useCategoryStore';
 
 const CategoryManagement = () => {
@@ -66,15 +67,19 @@ const CategoryManagement = () => {
         </div>
       </div>
       <div className="flex-1 min-h-0 grid grid-cols-4 flex-wrap gap-x-10 gap-y-12 overflow-y-auto px-6 pb-6 pt-1">
-        {categories.map((category) => (
-          <CategoryCard
-            setDetailModalOpen={setDetailModalOpen}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            key={category.id}
-            category={category}
-          />
-        ))}
+        {categories.length > 0 ? (
+          categories.map((category) => (
+            <CategoryCard
+              setDetailModalOpen={setDetailModalOpen}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              key={category.id}
+              category={category}
+            />
+          ))
+        ) : (
+          <NoData />
+        )}
       </div>
 
       <CategoryManagementModal

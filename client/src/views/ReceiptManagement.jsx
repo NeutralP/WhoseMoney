@@ -12,6 +12,7 @@ import EditReceiptModal from '~/features/Receipt/EditReceiptModal';
 import { toast } from 'react-toastify';
 import ProgressBar from '~/features/EarningTarget/ProgressBar';
 import Fallback from '~/components/Fallback';
+import NoData from '~/features/NoData/NoData';
 
 const ReceiptManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -187,49 +188,53 @@ const ReceiptManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredReceipts.map((receipt, index) => (
-              <tr
-                // onClick={() => {
-                //   setSelectedReceipt(receipt);
-                //   setReceiptDetailModalOpen(true);
-                // }}
-                key={receipt.id + index}
-                className="border-b cursor-pointer"
-              >
-                <td className="p-4">{receipt.name}</td>
-                <td className="p-4">{receipt.source}</td>
-                <td className="p-4">
-                  {money.formatVietnameseCurrency(receipt.amount)}
-                </td>
-                <td className="p-4 ">{receipt.date}</td>
-                <td
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-4 flex items-center space-x-2"
+            {filteredReceipts.length > 0 ? (
+              filteredReceipts.map((receipt, index) => (
+                <tr
+                  // onClick={() => {
+                  //   setSelectedReceipt(receipt);
+                  //   setReceiptDetailModalOpen(true);
+                  // }}
+                  key={receipt.id + index}
+                  className="border-b cursor-pointer"
                 >
-                  <Button
-                    onClick={() => {
-                      setSelectedReceipt(receipt);
-                      setReceiptDetailModalOpen(true);
-                    }}
-                    className="text-blue-500"
+                  <td className="p-4">{receipt.name}</td>
+                  <td className="p-4">{receipt.source}</td>
+                  <td className="p-4">
+                    {money.formatVietnameseCurrency(receipt.amount)}
+                  </td>
+                  <td className="p-4 ">{receipt.date}</td>
+                  <td
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-4 flex items-center space-x-2"
                   >
-                    <FaEye />
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setSelectedReceipt(receipt);
-                      setEditModalOpen(true);
-                    }}
-                  >
-                    <FaEdit />
-                  </Button>
-                  <ReceiptManagementDeleteAlert
-                    receipt={receipt}
-                    deleteReceipt={deleteReceipt}
-                  />
-                </td>
-              </tr>
-            ))}
+                    <Button
+                      onClick={() => {
+                        setSelectedReceipt(receipt);
+                        setReceiptDetailModalOpen(true);
+                      }}
+                      className="text-blue-500"
+                    >
+                      <FaEye />
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setSelectedReceipt(receipt);
+                        setEditModalOpen(true);
+                      }}
+                    >
+                      <FaEdit />
+                    </Button>
+                    <ReceiptManagementDeleteAlert
+                      receipt={receipt}
+                      deleteReceipt={deleteReceipt}
+                    />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <NoData />
+            )}
           </tbody>
         </table>
       </div>
