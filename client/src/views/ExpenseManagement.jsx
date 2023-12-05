@@ -211,6 +211,7 @@ const ExpenseManagement = () => {
         onClick={() =>
           setModalOpen({
             ...modalOpen,
+            type: 'add',
             state: true,
           })
         }
@@ -231,7 +232,9 @@ const ExpenseManagement = () => {
         open={detailModalOpen}
         setOpen={setDetailModalOpen}
         expense={selectedPayingMoney}
-        setEditModalOpen={(state) => setModalOpen({ ...modalOpen, state })}
+        setEditModalOpen={(state) =>
+          setModalOpen({ ...modalOpen, type: 'edit', state })
+        }
         deleteExpense={deleteExpense}
       />
     </div>

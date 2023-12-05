@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Fallback from '~/components/Fallback';
 import CategoryCard from '~/features/CategoryCard/CategoryCard';
+import ViewCategoryDetailModal from '~/features/CategoryDetail/ViewCategoryDetailModal';
 import CategoryManagementModal from '~/features/CategoryManagementModal/CategoryManagementModal';
 import useCategoryStore from '~/store/useCategoryStore';
 
 const CategoryManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedCategory, setSelectedCategory] = useState({});
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [categories, fetchingCategories, fetchCategories] = useCategoryStore(
     (state) => [
@@ -65,6 +68,7 @@ const CategoryManagement = () => {
       <div className="flex-1 min-h-0 grid grid-cols-4 flex-wrap gap-x-10 gap-y-12 overflow-y-auto px-6 pb-6 pt-1">
         {categories.map((category) => (
           <CategoryCard
+            setDetailModalOpen={setDetailModalOpen}
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
             key={category.id}
@@ -76,6 +80,11 @@ const CategoryManagement = () => {
       <CategoryManagementModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
+      />
+
+      <ViewCategoryDetailModal
+        open={detailModalOpen}
+        setOpen={setDetailModalOpen}
       />
     </div>
   );

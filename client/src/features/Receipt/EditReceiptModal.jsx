@@ -2,6 +2,7 @@ import { DatePicker, Input, Modal } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import axiosClient from '~/axios';
+import { userStateContext } from '~/contexts/ContextProvider';
 import useGlobalModalStore from '~/store/useGlobalModalStore';
 import { objUtils } from '~/utils';
 import { formatDate } from '~/utils/time';
@@ -13,6 +14,8 @@ const EditReceiptModal = ({
   open,
   setOpen,
 }) => {
+  const { fetchUser } = userStateContext();
+
   const [newReceipt, setNewReceipt] = useState(receipt);
 
   const [setConfirmModal, resetConfirmModal] = useGlobalModalStore((state) => [
@@ -49,6 +52,9 @@ const EditReceiptModal = ({
 
     axiosClient
       .patch(`/earning-money/${receipt.id}`, newReceipt)
+      .then(() => {
+        fetchUser();
+      })
       .catch((err) => console.error(err));
   };
 

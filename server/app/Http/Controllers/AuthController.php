@@ -72,9 +72,11 @@ class AuthController extends Controller
      */
     public function me(): JsonResponse
     {
+        $user = auth()->user();
+        // $user->fresh();
         return response()->json([
             'message' => 'Get current user successfully',
-            'data' => auth()->user(),
+            'data' => $user,
         ], 200);
     }
 

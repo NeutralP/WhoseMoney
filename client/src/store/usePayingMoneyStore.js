@@ -37,6 +37,9 @@ const usePayingMoneyStore = create((set) => ({
       })
       .catch((error) => {
         console.log(error);
+        toast.error('Thêm khoản chi thất bại.', {
+          autoClose: 1500,
+        });
       })
       .finally(() => {
         set({ payingMoneyActionLoading: false });
@@ -60,6 +63,9 @@ const usePayingMoneyStore = create((set) => ({
       })
       .catch((error) => {
         console.log(error);
+        toast.error('Cập nhật khoản chi thất bại.', {
+          autoClose: 1500,
+        });
       })
       .finally(() => {
         set({ payingMoneyActionLoading: false });

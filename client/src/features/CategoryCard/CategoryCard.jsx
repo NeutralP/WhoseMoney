@@ -5,7 +5,12 @@ import dayjs from 'dayjs';
 
 const numberOfDaysInCurrentMonth = dayjs().daysInMonth();
 
-const CategoryCard = ({ selectedMonth, selectedYear, category }) => {
+const CategoryCard = ({
+  setDetailModalOpen,
+  selectedMonth,
+  selectedYear,
+  category,
+}) => {
   const payLimit = useMemo(() => {
     return category.pay_limit.find(
       (pay) => pay.month === selectedMonth && pay.year === selectedYear
@@ -41,7 +46,10 @@ const CategoryCard = ({ selectedMonth, selectedYear, category }) => {
   const testData = [{ bgcolor: '#1677ff', completed: percentage }];
 
   return (
-    <div className="flex flex-col w-80 h-60 bg-white shadow-lg rounded-lg overflow-hidden">
+    <div
+      onClick={() => setDetailModalOpen(true)}
+      className="flex flex-col w-80 h-60 bg-white hover:shadow-lg cursor-pointer shadow-md rounded-lg overflow-hidden"
+    >
       <div className="bg-gray-200 font-bold px-4 py-2 flex justify-between items-center text-lg">
         <div>{category.name}</div>
         <div>{money.formatVietnameseCurrency(payLimit.limit)}</div>

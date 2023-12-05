@@ -1,6 +1,8 @@
 import { DatePicker, Input, Modal, Select } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
+import axiosClient from '~/axios';
 import { userStateContext } from '~/contexts/ContextProvider';
 import useCategoryStore from '~/store/useCategoryStore';
 import usePayingMoneyStore from '~/store/usePayingMoneyStore';
@@ -15,11 +17,12 @@ const PayingMoneyModal = ({
   payingMoneyData = {},
   setDetailModalOpen = () => {},
 }) => {
-  const { currentUser } = userStateContext();
+  const { currentUser, fetchUser } = userStateContext();
 
-  const [udpatePayingMoney, createNewPayingMoney] = usePayingMoneyStore(
-    (state) => [state.udpatePayingMoney, state.createNewPayingMoney]
-  );
+  const [payingMoney, setPayingMoney] = usePayingMoneyStore((state) => [
+    state.payingMoney,
+    state.setPayingMoney,
+  ]);
 
   const [categories] = useCategoryStore((state) => [state.categories]);
 
@@ -49,24 +52,55 @@ const PayingMoneyModal = ({
   }, [type, payingMoneyData]);
 
   const handleOk = () => {
+    const payload = {
+      ...newPayingMoney,
+      user_id: currentUser.id,
+    };
+
     if (type === 'edit') {
-      udpatePayingMoney(
-        payingMoneyData.id,
-        {
-          ...newPayingMoney,
-          user_id: currentUser.id,
-        },
-        setOpen
-      );
+      const id = payingMoneyData?.id;
+      axiosClient
+        .post('paying-money', payload)
+        .then(({ data }) => {
+          setPayingMoney(
+            payingMoney.map((item) => (item.id === id ? data.data : item))
+          );
+
+          toast.success('Thêm khoản chi thành công.', {
+            autoClose: 1500,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error('Thêm khoản chi thất bại.', {
+            autoClose: 1500,
+          });
+        })
+        .finally(() => {
+          setOpen(false);
+          fetchUser();
+        });
       setDetailModalOpen(false);
     } else {
-      createNewPayingMoney(
-        {
-          ...newPayingMoney,
-          user_id: currentUser.id,
-        },
-        setOpen
-      );
+      axiosClient
+        .post('paying-money', payload)
+        .then(({ data }) => {
+          setPayingMoney([data.data, ...payingMoney]);
+
+          toast.success('Thêm khoản chi thành công.', {
+            autoClose: 1500,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error('Thêm khoản chi thất bại.', {
+            autoClose: 1500,
+          });
+        })
+        .finally(() => {
+          setOpen(false);
+          fetchUser();
+        });
     }
   };
 

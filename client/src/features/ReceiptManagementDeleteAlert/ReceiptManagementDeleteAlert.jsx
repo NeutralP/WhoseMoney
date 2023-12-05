@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt } from 'react-icons/fa';
 import axiosClient from '~/axios';
+import { userStateContext } from '~/contexts/ContextProvider';
 
 const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
+  const { fetchUser } = userStateContext();
+
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => setIsModalVisible(true);
@@ -12,9 +15,14 @@ const ReceiptManagementDeleteAlert = ({ receipt, deleteReceipt }) => {
     deleteReceipt(receipt);
     setIsModalVisible(false);
 
-    axiosClient.delete(`/earning-money/${receipt.id}`).catch((error) => {
-      console.error(error);
-    });
+    axiosClient
+      .delete(`/earning-money/${receipt.id}`)
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        fetchUser();
+      });
   };
 
   const handleCancel = () => setIsModalVisible(false);

@@ -7,7 +7,7 @@ import axiosClient from '~/axios';
 import { userStateContext } from '~/contexts/ContextProvider';
 
 const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
-  const { currentUser } = userStateContext();
+  const { currentUser, fetchUser } = userStateContext();
 
   const modalRef = useRef();
   const [startDate, setStartDate] = useState(new Date());
@@ -47,9 +47,14 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
     console.log(receiptData);
     onClose();
 
-    axiosClient.post('/earning-money', receiptData).catch((err) => {
-      console.error(err);
-    });
+    axiosClient
+      .post('/earning-money', receiptData)
+      .then(() => {
+        fetchUser();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   if (!isOpen) return null;

@@ -67,6 +67,9 @@ class PayingMoneyController extends Controller
                 'amount' => $cur_balance->amount - $data['amount'],
             ]);
 
+            // Refresh the user's data
+            // $user->refresh();
+
             $data['prev_balance'] = $prev_balance->amount;
             $data['new_balance'] = $cur_balance->amount;
 
@@ -113,6 +116,9 @@ class PayingMoneyController extends Controller
                     'amount' => $cur_balance->amount + $old_amount - $new_amount,
                 ]);
 
+                // Refresh the user's data
+                // $user->refresh();
+
                 $data['prev_balance'] = $prev_balance->amount;
                 $data['new_balance'] = $cur_balance->amount;
 
@@ -148,6 +154,9 @@ class PayingMoneyController extends Controller
                 $cur_balance->update([
                     'amount' => $cur_balance->amount + $payingMoney->amount,
                 ]);
+
+                // Refresh the user's data
+                // $user->refresh();
 
                 $payingMoney->delete();
 

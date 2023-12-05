@@ -4,6 +4,7 @@ import useGlobalModalStore from '~/store/useGlobalModalStore';
 import { formatDate } from '~/utils/time';
 import { money, objUtils } from '~/utils';
 import axiosClient from '~/axios';
+import { userStateContext } from '~/contexts/ContextProvider';
 
 const ReceiptsDetailModal = ({
   receipt,
@@ -12,6 +13,8 @@ const ReceiptsDetailModal = ({
   open,
   setOpen,
 }) => {
+  const { fetchUser } = userStateContext();
+
   const [setConfirmModal, resetConfirmModal] = useGlobalModalStore((state) => [
     state.setConfirmModal,
     state.resetConfirmModal,
@@ -102,6 +105,9 @@ const ReceiptsDetailModal = ({
                     .delete(`/earning-money/${receipt.id}`)
                     .catch((error) => {
                       console.log(error);
+                    })
+                    .finally(() => {
+                      fetchUser();
                     });
                 },
               })

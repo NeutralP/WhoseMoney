@@ -3,8 +3,9 @@ import { Button, Modal } from 'antd';
 import useGlobalModalStore from '~/store/useGlobalModalStore';
 import { formatDate } from '~/utils/time';
 import { money, objUtils } from '~/utils';
-import axiosClient from '~/axios';
 import usePayingMoneyStore from '~/store/usePayingMoneyStore';
+import axiosClient from '~/axios';
+import { userStateContext } from '~/contexts/ContextProvider';
 
 const ExpensesDetailModal = ({
   expense,
@@ -13,13 +14,16 @@ const ExpensesDetailModal = ({
   open,
   setOpen,
 }) => {
+  const { fetchUser } = userStateContext();
+
   const [setConfirmModal, resetConfirmModal] = useGlobalModalStore((state) => [
     state.setConfirmModal,
     state.resetConfirmModal,
   ]);
 
-  const [deletePayingMoney] = usePayingMoneyStore((state) => [
-    state.deletePayingMoney,
+  const [payingMoney, setPayingMoney] = usePayingMoneyStore((state) => [
+    state.payingMoney,
+    state.setPayingMoney,
   ]);
 
   if (objUtils.isEmptyObject(expense)) {
@@ -90,11 +94,31 @@ const ExpensesDetailModal = ({
                 handleOk: () => {
                   deleteExpense(expense);
                   resetConfirmModal();
+
+                  axiosClient
+                    .delete(`paying-money/${expense.id}`)
+                    .then(() => {
+                      setPayingMoney(
+                        payingMoney.filter((item) => item.id !== expense.id)
+                      );
+
+                      // toast.success('Xóa khoản chi thành công.', {
+                      //   autoClose: 1500,
+                      // });
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      toast.error('Xóa khoản chi thất bại.', {
+                        autoClose: 1500,
+                      });
+                    })
+                    .finally(() => {
+                      fetchUser();
+                    });
+
                   setTimeout(() => {
                     setOpen(false);
                   }, 0);
-
-                  deletePayingMoney(expense.id);
                 },
               })
             }
