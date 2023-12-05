@@ -13,7 +13,7 @@ class PayingMoneyController extends Controller
     {
         try {
             $user = auth()->user();
-            $payingMoney = $user->payingMoney()->get();
+            $payingMoney = $user->payingMoney()->with('category')->get();
 
             if ($payingMoney) {
                 return response()->json([
@@ -30,7 +30,8 @@ class PayingMoneyController extends Controller
     public function show($payingMoneyId)
     {
         try {
-            $payingMoney = PayingMoney::find($payingMoneyId);
+            $payingMoney = PayingMoney::with('category')
+                ->find($payingMoneyId);
 
             if ($payingMoney) {
                 return response()->json([
@@ -47,8 +48,6 @@ class PayingMoneyController extends Controller
     public function store(Request $request)
     {
         try {
-            // $user = auth()->user();
-
             $data = $request->validate([
                 'name' => 'string|required',
                 'amount' => 'integer|required',
@@ -57,19 +56,27 @@ class PayingMoneyController extends Controller
                 'user_id' => 'exists:users,id|required',
             ]);
 
+            $user = auth()->user();
+            $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
+            $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
+
+            $prev_balance->update([
+                'amount' => $cur_balance->amount,
+            ]);
+            $cur_balance->update([
+                'amount' => $cur_balance->amount - $data['amount'],
+            ]);
+
+            // Refresh the user's data
+            // $user->refresh();
+
+            $data['prev_balance'] = $prev_balance->amount;
+            $data['new_balance'] = $cur_balance->amount;
+
             $payingMoney = PayingMoney::create($data);
 
             if ($payingMoney) {
-                $user = auth()->user();
-                $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
-                $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
-
-                $prev_balance->update([
-                    'amount' => $cur_balance->amount,
-                ]);
-                $cur_balance->update([
-                    'amount' => $cur_balance->amount - $payingMoney->amount,
-                ]);
+                $payingMoney->load('category');
 
                 return response()->json([
                     'data' => $payingMoney,
@@ -93,11 +100,12 @@ class PayingMoneyController extends Controller
             ]);
 
             $payingMoney = PayingMoney::find($payingMoneyId);
-            $old_amount = $payingMoney->amount;
-            $new_amount = $request->amount;
 
             if ($payingMoney) {
                 $user = auth()->user();
+                $old_amount = $payingMoney->amount;
+                $new_amount = $request->amount;
+
                 $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
                 $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
 
@@ -108,7 +116,15 @@ class PayingMoneyController extends Controller
                     'amount' => $cur_balance->amount + $old_amount - $new_amount,
                 ]);
 
+                // Refresh the user's data
+                // $user->refresh();
+
+                $data['prev_balance'] = $prev_balance->amount;
+                $data['new_balance'] = $cur_balance->amount;
+
                 $payingMoney->update($data);
+
+                $payingMoney->load('category');
 
                 return response()->json([
                     'data' => $payingMoney,
@@ -138,6 +154,9 @@ class PayingMoneyController extends Controller
                 $cur_balance->update([
                     'amount' => $cur_balance->amount + $payingMoney->amount,
                 ]);
+
+                // Refresh the user's data
+                // $user->refresh();
 
                 $payingMoney->delete();
 

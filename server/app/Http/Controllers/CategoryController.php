@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -32,9 +33,17 @@ class CategoryController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'string|required',
+                'limit' => 'numeric|required',
             ]);
 
-            $category = Category::create($data);
+            $user = auth()->user();
+            $category = $user->categories()->create($data);
+            $category->payingLimits()->updateOrCreate([
+                'month' => Carbon::now()->month,
+                'year' => Carbon::now()->year,
+            ], [
+                'limit' => $data['limit'],
+            ]);
 
             if ($category) {
                 return response()->json([
@@ -102,8 +111,8 @@ class CategoryController extends Controller
             $category = Category::find($categoryId);
 
             if ($category) {
-                $category->payingLimit()->updateOrCreate([
-                    'category_id' => $category->id,
+                $category->payingLimits()->updateOrCreate([
+                    // 'category_id' => $category->id,
                     'month' => $data['month'],
                     'year' => $data['year'],
                 ], [

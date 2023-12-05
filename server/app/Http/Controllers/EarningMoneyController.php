@@ -40,19 +40,25 @@ class EarningMoneyController extends Controller
 
             $user = auth()->user();
 
+            $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
+            $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
+
+            $prev_balance->update([
+                'amount' => $cur_balance->amount,
+            ]);
+            $cur_balance->update([
+                'amount' => $cur_balance->amount + $data['amount'],
+            ]);
+
+            // Refresh the user's data
+            // $user->refresh();
+
+            $data['prev_balance'] = $prev_balance->amount;
+            $data['new_balance'] = $cur_balance->amount;
+
             $new_earning = $user->earningMoney()->create($data);
 
             if ($new_earning) {
-                $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
-                $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
-
-                $prev_balance->update([
-                    'amount' => $cur_balance->amount,
-                ]);
-                $cur_balance->update([
-                    'amount' => $cur_balance->amount + $new_earning->amount,
-                ]);
-
                 return response()->json([
                     'data' => $new_earning,
                     'message' => 'Created',
@@ -82,7 +88,6 @@ class EarningMoneyController extends Controller
             if ($earning) {
                 $old_amount = $earning->amount;
                 $new_amount = $request->amount;
-                $earning->update($data);
 
                 $prev_balance = $user->balances()->where('name', 'prev_balance')->first();
                 $cur_balance = $user->balances()->where('name', 'cur_balance')->first();
@@ -93,6 +98,14 @@ class EarningMoneyController extends Controller
                 $cur_balance->update([
                     'amount' => $cur_balance->amount - $old_amount + $new_amount,
                 ]);
+
+                // Refresh the user's data
+                // $user->refresh();
+
+                $data['prev_balance'] = $prev_balance->amount;
+                $data['new_balance'] = $cur_balance->amount;
+
+                $earning->update($data);
 
                 return response()->json([
                     'data' => $earning,
@@ -128,6 +141,9 @@ class EarningMoneyController extends Controller
                 $cur_balance->update([
                     'amount' => $cur_balance->amount - $earning->amount,
                 ]);
+
+                // Refresh the user's data
+                // $user->refresh();
 
                 $earning->delete();
 

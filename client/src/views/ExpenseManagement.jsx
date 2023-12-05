@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { money } from '~/utils';
 import { getDateLeftInCurrentMonth } from '~/utils/time';
-import axiosClient from '~/axios';
 import { FaEye, FaEdit } from 'react-icons/fa';
 import { Button, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -11,6 +10,7 @@ import usePayingMoneyStore from '~/store/usePayingMoneyStore';
 import Fallback from '~/components/Fallback';
 import PayingMoneyModal from '~/features/PayingMoney/PayingMoneyModal';
 import useCategoryStore from '~/store/useCategoryStore';
+import ExpensesDetailModal from '~/features/Expense/ExpensesDetailModal';
 
 const ExpenseManagement = () => {
   const [payingMoney, fetchingPayingMoney, fetchPayingMoney] =
@@ -45,8 +45,10 @@ const ExpenseManagement = () => {
   const [modalOpen, setModalOpen] = useState({
     state: false,
     type: 'add',
-    selectedPayingMoney: null,
   });
+
+  const [selectedPayingMoney, setSelectedPayingMoney] = useState({});
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   useEffect(() => {
     fetchPayingMoney();
@@ -165,7 +167,7 @@ const ExpenseManagement = () => {
             {filteredExpeneses.map((expense) => (
               <tr key={expense.id} className="border-b cursor-pointer">
                 <td className="p-4">{expense.name}</td>
-                <td className="p-4">{expense.category}</td>
+                <td className="p-4">{expense.category.name}</td>
                 <td className="p-4">
                   {money.formatVietnameseCurrency(expense.amount)}
                 </td>
@@ -174,10 +176,24 @@ const ExpenseManagement = () => {
                   onClick={(e) => e.stopPropagation()}
                   className="p-4 flex items-center space-x-2"
                 >
-                  <Button onClick={() => {}} className="text-blue-500">
+                  <Button
+                    onClick={() => {
+                      setDetailModalOpen(true);
+                      setSelectedPayingMoney(expense);
+                    }}
+                    className="text-blue-500"
+                  >
                     <FaEye />
                   </Button>
-                  <Button onClick={() => {}}>
+                  <Button
+                    onClick={() => {
+                      setModalOpen({
+                        type: 'edit',
+                        state: true,
+                      });
+                      setSelectedPayingMoney(expense);
+                    }}
+                  >
                     <FaEdit />
                   </Button>
                   <ExpenseManagementDeleteAlert
@@ -195,6 +211,7 @@ const ExpenseManagement = () => {
         onClick={() =>
           setModalOpen({
             ...modalOpen,
+            type: 'add',
             state: true,
           })
         }
@@ -206,8 +223,19 @@ const ExpenseManagement = () => {
       <PayingMoneyModal
         type={modalOpen.type}
         open={modalOpen.state}
-        setOpen={(state) => setModalOpen({ ...modalOpen, state })}
-        payingMoneyData={modalOpen.selectedPayingMoney}
+        setOpen={(state) => setModalOpen({ ...modalOpen, state, type: 'edit' })}
+        payingMoneyData={selectedPayingMoney}
+        setDetailModalOpen={setDetailModalOpen}
+      />
+
+      <ExpensesDetailModal
+        open={detailModalOpen}
+        setOpen={setDetailModalOpen}
+        expense={selectedPayingMoney}
+        setEditModalOpen={(state) =>
+          setModalOpen({ ...modalOpen, type: 'edit', state })
+        }
+        deleteExpense={deleteExpense}
       />
     </div>
   );

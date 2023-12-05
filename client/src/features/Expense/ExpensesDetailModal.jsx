@@ -3,7 +3,9 @@ import { Button, Modal } from 'antd';
 import useGlobalModalStore from '~/store/useGlobalModalStore';
 import { formatDate } from '~/utils/time';
 import { money, objUtils } from '~/utils';
+import usePayingMoneyStore from '~/store/usePayingMoneyStore';
 import axiosClient from '~/axios';
+import { userStateContext } from '~/contexts/ContextProvider';
 
 const ExpensesDetailModal = ({
   expense,
@@ -12,9 +14,16 @@ const ExpensesDetailModal = ({
   open,
   setOpen,
 }) => {
+  const { fetchUser } = userStateContext();
+
   const [setConfirmModal, resetConfirmModal] = useGlobalModalStore((state) => [
     state.setConfirmModal,
     state.resetConfirmModal,
+  ]);
+
+  const [payingMoney, setPayingMoney] = usePayingMoneyStore((state) => [
+    state.payingMoney,
+    state.setPayingMoney,
   ]);
 
   if (objUtils.isEmptyObject(expense)) {
@@ -39,15 +48,6 @@ const ExpensesDetailModal = ({
         </header>
 
         <div className="grid grid-cols-2 gap-4 pb-8">
-          {/* Source */}
-          <div className="text-center text-base font-medium truncate">
-            Nguồn tiền
-          </div>
-          <div className="text-base text-center truncate">
-            {expense?.source}
-            {/* Cong ty ABC */}
-          </div>
-
           {/* Amount */}
           <div className="text-center text-base font-medium truncate">
             Số tiền
@@ -71,8 +71,7 @@ const ExpensesDetailModal = ({
             Sô dư trước
           </div>
           <div className="text-base text-center truncate">
-            {/* {expense?.before_balance} */}
-            10.000.000
+            {expense?.prev_balance}
           </div>
 
           {/* After balance */}
@@ -80,8 +79,7 @@ const ExpensesDetailModal = ({
             Số dư sau
           </div>
           <div className="text-base text-center truncate">
-            {/* {expense?.after_balance} */}
-            20.000.000
+            {expense?.new_balance}
           </div>
         </div>
 
@@ -96,15 +94,31 @@ const ExpensesDetailModal = ({
                 handleOk: () => {
                   deleteExpense(expense);
                   resetConfirmModal();
+
+                  axiosClient
+                    .delete(`paying-money/${expense.id}`)
+                    .then(() => {
+                      setPayingMoney(
+                        payingMoney.filter((item) => item.id !== expense.id)
+                      );
+
+                      // toast.success('Xóa khoản chi thành công.', {
+                      //   autoClose: 1500,
+                      // });
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      toast.error('Xóa khoản chi thất bại.', {
+                        autoClose: 1500,
+                      });
+                    })
+                    .finally(() => {
+                      fetchUser();
+                    });
+
                   setTimeout(() => {
                     setOpen(false);
                   }, 0);
-
-                  axiosClient
-                    .delete(`/spending-money/${expense.id}`)
-                    .catch((error) => {
-                      console.log(error);
-                    });
                 },
               })
             }
@@ -126,4 +140,4 @@ const ExpensesDetailModal = ({
   );
 };
 
-export default expensesDetailModal;
+export default ExpensesDetailModal;

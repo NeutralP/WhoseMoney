@@ -18,6 +18,8 @@ return new class extends Migration
 
             $table->string('name');
             $table->bigInteger('amount');
+            $table->bigInteger('prev_balance');
+            $table->bigInteger('new_balance');
             $table->string('date');
 
             $table->foreign('user_id')->references('id')->on('users');
