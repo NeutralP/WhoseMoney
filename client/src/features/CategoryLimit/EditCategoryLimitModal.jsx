@@ -2,7 +2,16 @@ import { DatePicker, Input, Modal } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 
-const EditReceiptModal = ({ open, setOpen }) => {
+const EditCategoryLimitModal = ({ open, setOpen }) => {
+  const handleCancel = () => {
+    setOpen(false);
+    console.log('Cancel');
+  };
+
+  const handleOk = () => {
+    setOpen(false);
+    console.log('Ok');
+  };
   return (
     <Modal
       // title={`Chỉnh sửa ${receipt.name}`}
@@ -24,7 +33,7 @@ const EditReceiptModal = ({ open, setOpen }) => {
           </div>
 
           {/* Source */}
-          <div className="text-base font-medium truncate">Hạn mức chi tiêu</div>
+          <div className="text-base font-medium truncate" style={{width: 200}}>Hạn mức chi tiêu</div>
           <div>
             <Input placeholder="Enter money source here" />
           </div>
@@ -34,4 +43,4 @@ const EditReceiptModal = ({ open, setOpen }) => {
   );
 };
 
-export default EditReceiptModal;
+export default EditCategoryLimitModal;

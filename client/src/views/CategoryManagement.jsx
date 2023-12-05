@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import CategoryCard from '~/features/CategoryCard/CategoryCard';
+import ViewCategoryDetailModal from '~/features/CategoryDetail/ViewCategoryDetailModal';
 import CategoryManagementModal from '~/features/CategoryManagementModal/CategoryManagementModal';
 
 const CategoryManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [categoriesDetail, setCategoriesDetail] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [categories, setCategories] = useState([
     {
@@ -99,7 +101,6 @@ const CategoryManagement = () => {
       amount: 5000000,
     },
   ]);
-  //   const [categories, setCategories] = useState([]);
 
   return (
     <div className="mt-8 flex flex-col overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
@@ -141,15 +142,23 @@ const CategoryManagement = () => {
           </select>
         </div>
       </div>
+      <button onClick={() => setCategoriesDetail(true)}>
       <div className="flex-1 min-h-0 w-full flex flex-wrap gap-x-10 gap-y-12 overflow-y-auto px-6 pb-6 pt-1">
         {categories.map((category) => (
           <CategoryCard key={category.id} category={category} />
         ))}
       </div>
+      </button>
+      
 
       <CategoryManagementModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
+      />
+
+      <ViewCategoryDetailModal
+        open={categoriesDetail}
+        setOpen={setCategoriesDetail}
       />
     </div>
   );

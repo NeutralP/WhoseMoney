@@ -1,5 +1,6 @@
-import { DatePicker, Input, Modal, Select } from 'antd';
+import { DatePicker, Input, Modal, Select, Button } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
+import EditCategoryLimitModal from '../CategoryLimit/EditCategoryLimitModal';
 
 // Use for both add and edit
 const ViewCategoryDetailModal = ({ open, setOpen }) => {
@@ -13,14 +14,18 @@ const ViewCategoryDetailModal = ({ open, setOpen }) => {
     console.log('Ok');
   };
 
+  const [editCategoryLimit, setEditCategoryLimit] = useState(false)
+
+
   return (
+    <div>
     <Modal
-      title={''}
+      title={'Danh mục 1'}
       open={open}
       onCancel={handleCancel}
-      width={525}
+      width={400}
       centered
-      onOk={handleOk}
+      footer={null}
       className="custom-modal"
     >
       <div className="flex flex-col pt-6 pb-4">
@@ -42,7 +47,7 @@ const ViewCategoryDetailModal = ({ open, setOpen }) => {
             2.000.000VNĐ
           </div>
           <div className="text-base font-medium truncate">Quá trình</div>
-          <div className="text-base truncate">
+          <div className="text-base truncate mb-4">
             {/* {quá trình là gì?} */}
             30%
           </div>
@@ -51,13 +56,18 @@ const ViewCategoryDetailModal = ({ open, setOpen }) => {
           <Button
             type="default"
             size="large"
-            onClick={() => setEditModalOpen(true)}
+            onClick={() => setEditCategoryLimit(true)}
           >
             Chỉnh sửa
           </Button>
         </footer>
       </div>
     </Modal>
+    <EditCategoryLimitModal 
+    open={editCategoryLimit}
+    setOpen={setEditCategoryLimit}
+    />
+    </div>
   );
 };
 
