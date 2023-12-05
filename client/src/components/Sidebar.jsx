@@ -151,10 +151,10 @@ const Sidebar = ({}) => {
         </Link>
 
         <Link
-          to="/category-management"
+          to="/categories-management"
           className={cn(
             'sidebar-item',
-            pathname === '/' && 'sidebar-item--active'
+            pathname === '/categories-management' && 'sidebar-item--active'
           )}
         >
           <div className="flex items-center gap-3">
@@ -190,10 +190,10 @@ const Sidebar = ({}) => {
         </Link>
 
         <Link
-          to="/"
+          to="/saves-management"
           className={cn(
             'sidebar-item',
-            pathname === '/' && 'sidebar-item--active'
+            pathname === '/saves-management' && 'sidebar-item--active'
           )}
         >
           <div className="flex items-center gap-3">

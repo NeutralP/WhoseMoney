@@ -4,10 +4,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { userStateContext } from '~/contexts/ContextProvider';
 import useCategoryStore from '~/store/useCategoryStore';
 import usePayingMoneyStore from '~/store/usePayingMoneyStore';
+import { objUtils } from '~/utils';
 import { formatDate } from '~/utils/time';
 
 // Use for both add and edit
-const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
+const PayingMoneyModal = ({
+  type = 'add',
+  open,
+  setOpen,
+  payingMoneyData = {},
+  setDetailModalOpen = () => {},
+}) => {
   const { currentUser } = userStateContext();
 
   const [udpatePayingMoney, createNewPayingMoney] = usePayingMoneyStore(
@@ -31,7 +38,7 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
   }, [categories]);
 
   useEffect(() => {
-    if (type === 'edit') {
+    if (type === 'edit' && !objUtils.isEmptyObject(payingMoneyData)) {
       setNewPayingMoney({
         name: payingMoneyData.name,
         amount: payingMoneyData.amount,
@@ -42,7 +49,7 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
   }, [type, payingMoneyData]);
 
   const handleOk = () => {
-    if (type === 'add') {
+    if (type === 'edit') {
       udpatePayingMoney(
         payingMoneyData.id,
         {
@@ -51,6 +58,7 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
         },
         setOpen
       );
+      setDetailModalOpen(false);
     } else {
       createNewPayingMoney(
         {
@@ -71,6 +79,7 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
       centered
       onOk={handleOk}
       className="custom-modal"
+      zIndex={1005}
     >
       <div className="py-2 grid grid-cols-[120px_1fr] gap-y-4 items-center">
         {type === 'add' && (
@@ -78,7 +87,7 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
             <p className="text-base font-medium">Số dư trước:</p>
             <p>{currentUser.cur_balance}</p>
             <p className="text-base font-medium">Số dư sau:</p>
-            <p>{currentUser.cur_balance + parseInt(newPayingMoney.amount)}</p>
+            <p>{currentUser.cur_balance - Number(newPayingMoney.amount)}</p>
           </>
         )}
         <label className="text-base font-medium">Tên khoản chi:</label>
@@ -90,16 +99,21 @@ const PayingMoneyModal = ({ type = 'add', open, setOpen, payingMoneyData }) => {
             setNewPayingMoney({ ...newPayingMoney, name: e.target.value })
           }
         />
-        <label className="text-base font-medium">Danh mục:</label>
-        <Select
-          allowClear
-          style={{ width: '100%' }}
-          placeholder="Select category"
-          options={categoriesOptions}
-          onChange={(value) =>
-            setNewPayingMoney({ ...newPayingMoney, category_id: value })
-          }
-        />
+        {type === 'add' && (
+          <>
+            <label className="text-base font-medium">Danh mục:</label>
+            <Select
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="Select category"
+              options={categoriesOptions}
+              onChange={(value) =>
+                setNewPayingMoney({ ...newPayingMoney, category_id: value })
+              }
+              value={newPayingMoney.category_id}
+            />
+          </>
+        )}
         <label className="text-base font-medium">Số tiền:</label>
         <Input
           placeholder="Amount"

@@ -6,7 +6,7 @@ const usePayingMoneyStore = create((set) => ({
   payingMoney: [],
   setPayingMoney: (payingMoney) => set({ payingMoney }),
 
-  fetchingPayingMoney: false,
+  fetchingPayingMoney: true,
   setFetchingPayingMoney: (fetchingPayingMoney) => set({ fetchingPayingMoney }),
 
   fetchPayingMoney: () => {
@@ -50,7 +50,7 @@ const usePayingMoneyStore = create((set) => ({
   udpatePayingMoney: (id, payingMoney, setOpen) => {
     set({ payingMoneyActionLoading: true });
     axiosClient
-      .put(`paying-money/${id}`, payingMoney)
+      .patch(`paying-money/${id}`, payingMoney)
       .then(({ data }) => {
         set((state) => ({
           payingMoney: state.payingMoney.map((item) =>
@@ -67,6 +67,30 @@ const usePayingMoneyStore = create((set) => ({
         toast.success('Cập nhật khoản chi thành công.', {
           autoClose: 1500,
         });
+      });
+  },
+
+  deletePayingMoney: (id) => {
+    set({ payingMoneyActionLoading: true });
+    axiosClient
+      .delete(`paying-money/${id}`)
+      .then(() => {
+        set((state) => ({
+          payingMoney: state.payingMoney.filter((item) => item.id !== id),
+        }));
+
+        // toast.success('Xóa khoản chi thành công.', {
+        //   autoClose: 1500,
+        // });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('Xóa khoản chi thất bại.', {
+          autoClose: 1500,
+        });
+      })
+      .finally(() => {
+        set({ payingMoneyActionLoading: false });
       });
   },
 }));

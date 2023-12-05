@@ -9,6 +9,7 @@ import Dashboard from './views/Dashboard.jsx';
 import Profile from './views/Profile.jsx';
 import NotFound404 from './views/NotFound404.jsx';
 import CategoryManagement from './views/CategoryManagement.jsx';
+import SaveManagement from './views/SaveManagement.jsx';
 
 const router = createBrowserRouter([
   {
@@ -32,8 +33,12 @@ const router = createBrowserRouter([
         element: <ExpenseManagement />,
       },
       {
-        path: '/category-management',
+        path: '/categories-management',
         element: <CategoryManagement />,
+      },
+      {
+        path: '/saves-management',
+        element: <SaveManagement />,
       },
       {
         path: '*',

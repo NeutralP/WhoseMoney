@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Category extends Model
 {
@@ -22,9 +21,9 @@ class Category extends Model
     ];
 
     protected $appends = [
-        'payLimit',
-        'totalPay',
-        'payList',
+        'pay_limit',
+        'total_pay',
+        'pay_list',
     ];
 
     protected static function boot()
@@ -32,7 +31,7 @@ class Category extends Model
         parent::boot();
 
         static::created(function ($category) {
-            $category->payingLimit()->create([
+            $category->payingLimits()->create([
                 'limit' => 0,
                 'month' => Carbon::now()->month,
                 'year' => Carbon::now()->year,
@@ -43,7 +42,7 @@ class Category extends Model
     protected function payLimit(): Attribute
     {
         return new Attribute(function () {
-            return $this->payingLimit()->first();
+            return $this->payingLimits()->get();
         });
     }
 
@@ -66,9 +65,9 @@ class Category extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function payingLimit(): HasOne
+    public function payingLimits(): HasMany
     {
-        return $this->hasOne(PayingLimit::class);
+        return $this->hasMany(PayingLimit::class);
     }
 
     public function payingMoney(): HasMany

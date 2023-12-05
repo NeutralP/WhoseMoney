@@ -71,8 +71,7 @@ const ReceiptsDetailModal = ({
             Sô dư trước
           </div>
           <div className="text-base text-center truncate">
-            {/* {receipt?.before_balance} */}
-            10.000.000
+            {receipt?.prev_balance}
           </div>
 
           {/* After balance */}
@@ -80,8 +79,7 @@ const ReceiptsDetailModal = ({
             Số dư sau
           </div>
           <div className="text-base text-center truncate">
-            {/* {receipt?.after_balance} */}
-            20.000.000
+            {receipt?.new_balance}
           </div>
         </div>
 

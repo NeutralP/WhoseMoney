@@ -4,8 +4,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './ReceiptManagementModal.scss';
 import { formatDate } from '~/utils/time';
 import axiosClient from '~/axios';
+import { userStateContext } from '~/contexts/ContextProvider';
 
 const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
+  const { currentUser } = userStateContext();
+
   const modalRef = useRef();
   const [startDate, setStartDate] = useState(new Date());
   const [receiptData, setReceiptData] = useState({
@@ -71,12 +74,16 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
 
           <div className="mb-2">
             <label className="block mb-1 font-bold">Số dư trước:</label>
-            <div className="bg-gray-200 p-2 rounded">20.000.000</div>
+            <div className="bg-gray-200 p-2 rounded">
+              {currentUser.cur_balance}
+            </div>
           </div>
 
           <div className="mb-2">
             <label className="block mb-1 font-bold">Số dư sau:</label>
-            <div className="bg-gray-200 p-2 rounded">20.000.000</div>
+            <div className="bg-gray-200 p-2 rounded">
+              {currentUser.cur_balance + Number(receiptData.amount)}
+            </div>
           </div>
 
           <div className="mb-4">

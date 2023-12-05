@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
 import { FaTrashAlt } from 'react-icons/fa';
 import axiosClient from '~/axios';
+import usePayingMoneyStore from '~/store/usePayingMoneyStore';
 
 const ExpenseManagementDeleteAlert = ({ expense, deleteExpense }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [deletePayingMoney] = usePayingMoneyStore((state) => [
+    state.deletePayingMoney,
+  ]);
 
   const showModal = () => setIsModalVisible(true);
 
@@ -12,9 +16,7 @@ const ExpenseManagementDeleteAlert = ({ expense, deleteExpense }) => {
     deleteExpense(expense);
     setIsModalVisible(false);
 
-    // axiosClient.delete(`/paying-money/${expense.id}`).catch((error) => {
-    //   console.error(error);
-    // });
+    deletePayingMoney(expense.id);
   };
 
   const handleCancel = () => setIsModalVisible(false);

@@ -16,6 +16,8 @@ class EarningMoney extends Model
         'user_id',
         'name',
         'amount',
+        'prev_balance',
+        'new_balance',
         'date',
         'source',
     ];
