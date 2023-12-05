@@ -16,6 +16,8 @@ const PayingMoneyModal = ({
   setOpen,
   payingMoneyData = {},
   setDetailModalOpen = () => {},
+  openFromCategory = false,
+  setCategoryDetailModalOpen = () => {},
 }) => {
   const { currentUser, fetchUser } = userStateContext();
 
@@ -24,7 +26,10 @@ const PayingMoneyModal = ({
     state.setPayingMoney,
   ]);
 
-  const [categories] = useCategoryStore((state) => [state.categories]);
+  const [categories, fetchCategories] = useCategoryStore((state) => [
+    state.categories,
+    state.fetchCategories,
+  ]);
 
   const [newPayingMoney, setNewPayingMoney] = useState({
     name: '',
@@ -60,25 +65,29 @@ const PayingMoneyModal = ({
     if (type === 'edit') {
       const id = payingMoneyData?.id;
       axiosClient
-        .post('paying-money', payload)
+        .patch(`paying-money/${id}`, payload)
         .then(({ data }) => {
           setPayingMoney(
             payingMoney.map((item) => (item.id === id ? data.data : item))
           );
 
-          toast.success('Thêm khoản chi thành công.', {
+          toast.success('Chỉnh sửa khoản chi thành công.', {
             autoClose: 1500,
           });
         })
         .catch((error) => {
           console.log(error);
-          toast.error('Thêm khoản chi thất bại.', {
+          toast.error('Chỉnh sửa khoản chi thất bại.', {
             autoClose: 1500,
           });
         })
         .finally(() => {
           setOpen(false);
           fetchUser();
+          if (openFromCategory) {
+            fetchCategories();
+            setCategoryDetailModalOpen(false);
+          }
         });
       setDetailModalOpen(false);
     } else {

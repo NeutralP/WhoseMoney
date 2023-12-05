@@ -16,6 +16,7 @@ class EarningTarget extends Model
         'user_id',
         'target',
         'month',
+        'year',
     ];
 
     public function user(): BelongsTo

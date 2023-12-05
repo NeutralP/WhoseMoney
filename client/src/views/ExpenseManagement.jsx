@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { money } from '~/utils';
-import { getDateLeftInCurrentMonth } from '~/utils/time';
+import { formatDate, getDateLeftInCurrentMonth } from '~/utils/time';
 import { FaEye, FaEdit } from 'react-icons/fa';
 import { Button, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -84,8 +84,8 @@ const ExpenseManagement = () => {
   };
 
   const calculateTotalAmount = () => {
-    return filteredExpeneses.reduce((acc, receipt) => {
-      const amount = receipt.amount;
+    return filteredExpeneses.reduce((acc, expense) => {
+      const amount = Number(expense.amount);
       return acc + amount;
     }, 0);
   };
@@ -165,7 +165,7 @@ const ExpenseManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredExpeneses.length > 0 ? (
+            {filteredExpeneses.length > 0 &&
               filteredExpeneses.map((expense) => (
                 <tr key={expense.id} className="border-b cursor-pointer">
                   <td className="p-4">{expense.name}</td>
@@ -173,7 +173,7 @@ const ExpenseManagement = () => {
                   <td className="p-4">
                     {money.formatVietnameseCurrency(expense.amount)}
                   </td>
-                  <td className="p-4 ">{expense.date}</td>
+                  <td className="p-4 ">{formatDate(new Date(expense.date))}</td>
                   <td
                     onClick={(e) => e.stopPropagation()}
                     className="p-4 flex items-center space-x-2"
@@ -204,12 +204,14 @@ const ExpenseManagement = () => {
                     />
                   </td>
                 </tr>
-              ))
-            ) : (
-              <NoData />
-            )}
+              ))}
           </tbody>
         </table>
+        {filteredExpeneses.length === 0 && (
+          <div className="w-full">
+            <NoData />
+          </div>
+        )}
       </div>
 
       <button
