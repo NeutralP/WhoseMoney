@@ -30,8 +30,9 @@ class EarningTargetController extends Controller
     {
         try {
             $data = $request->validate([
-                'target' => 'integer|required',
+                'target' => 'numeric|required',
                 'month' => 'integer|required',
+                'year' => 'integer|required',
             ]);
 
             $user = auth()->user();
@@ -39,7 +40,10 @@ class EarningTargetController extends Controller
             $target = $user->earningTargets()->create($data);
 
             if ($target) {
-                return response()->json([]);
+                return response()->json([
+                    'data' => $target,
+                    'message' => 'Created',
+                ], 201);
             }
         } catch (Exception $e) {
             return response()->json([
@@ -52,8 +56,9 @@ class EarningTargetController extends Controller
     {
         try {
             $data = $request->validate([
-                'target' => 'required|integer',
+                'target' => 'required|numeric',
                 'month' => 'required|integer',
+                'year' => 'required|integer'
             ]);
 
             $user = auth()->user();

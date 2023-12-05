@@ -70,3 +70,12 @@
     cursor: pointer;
   }
 }
+
+.bg-box {
+  background-color: var(--default-body-color);
+  border-radius: 5px;
+}
+
+.progress-bar div {
+  margin: 0 !important;
+}

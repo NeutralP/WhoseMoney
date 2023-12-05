@@ -6,16 +6,21 @@ import dayjs from 'dayjs';
 const numberOfDaysInCurrentMonth = dayjs().daysInMonth();
 
 const CategoryCard = ({
+  setSelectedCategory,
   setDetailModalOpen,
   selectedMonth,
   selectedYear,
   category,
 }) => {
   const payLimit = useMemo(() => {
-    return category.pay_limit.find(
-      (pay) => pay.month === selectedMonth && pay.year === selectedYear
+    return (
+      category.pay_limit.find(
+        (pay) => pay.month === selectedMonth && pay.year === selectedYear
+      ) ?? {
+        limit: 0,
+      }
     );
-  }, [category.id]);
+  }, [category, selectedMonth, selectedYear]);
 
   const totalPay = useMemo(() => {
     const payList = category.pay_list.filter((pay) => {
@@ -26,7 +31,7 @@ const CategoryCard = ({
       );
     });
     return payList.reduce((acc, pay) => acc + pay.amount, 0);
-  }, [category.id, selectedMonth, selectedYear]);
+  }, [category, selectedMonth, selectedYear]);
 
   const percentage = useMemo(() => {
     if (!payLimit || totalPay === 0) {
@@ -47,7 +52,10 @@ const CategoryCard = ({
 
   return (
     <div
-      onClick={() => setDetailModalOpen(true)}
+      onClick={() => {
+        setDetailModalOpen(true);
+        setSelectedCategory(category);
+      }}
       className="flex flex-col w-80 h-60 bg-white hover:shadow-lg cursor-pointer shadow-md rounded-lg overflow-hidden"
     >
       <div className="bg-gray-200 font-bold px-4 py-2 flex justify-between items-center text-lg">

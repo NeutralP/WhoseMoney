@@ -1,3 +1,5 @@
+import { Button, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import Fallback from '~/components/Fallback';
 import CategoryCard from '~/features/CategoryCard/CategoryCard';
@@ -12,6 +14,7 @@ const CategoryManagement = () => {
   const [selectedCategory, setSelectedCategory] = useState({});
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
   const [categories, fetchingCategories, fetchCategories] = useCategoryStore(
     (state) => [
       state.categories,
@@ -19,23 +22,34 @@ const CategoryManagement = () => {
       state.fetchCategories,
     ]
   );
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    setSearchInput('');
+    setFilteredCategories(categories);
+  }, [categories]);
+
+  const handleSearchInput = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    const results = categories.filter((item) =>
+      item.name.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setFilteredCategories(results);
+  };
+
   if (fetchingCategories) return <Fallback />;
 
   return (
     <div className="mt-8 flex flex-col overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold text-gray-700">Quản lý danh mục</h2>
-      <div className="flex container justify-between mb-9 mt-5">
-        <button
-          onClick={() => setModalOpen(true)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right rounded"
-        >
-          Thêm danh mục
-        </button>
+      <div className="w-full flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-700">Quản lý danh mục</h2>
         <div className="flex items-center">
           <p className="align-middle mr-2">Lọc theo tháng: </p>
           <select
@@ -66,21 +80,47 @@ const CategoryManagement = () => {
           </select>
         </div>
       </div>
+      <div className="flex container items-center justify-between mb-9 mt-5">
+        <button
+          onClick={() => setModalOpen(true)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 float-right rounded"
+        >
+          Thêm danh mục
+        </button>
+        <div>
+          <form>
+            <Input
+              className="border border-solid mr-2 focus:border focus:border-solid border-gray-300 rounded w-full p-1"
+              type="text"
+              placeholder="Tìm kiếm danh mục..."
+              value={searchInput}
+              onChange={handleSearchInput}
+              style={{ width: 300 }}
+            />
+            <Button onClick={handleSearchSubmit} className="text-blue-500">
+              <SearchOutlined className="align-baseline	" />
+            </Button>
+          </form>
+        </div>
+      </div>
       <div className="flex-1 min-h-0 grid grid-cols-4 flex-wrap gap-x-10 gap-y-12 overflow-y-auto px-6 pb-6 pt-1">
-        {categories.length > 0 ? (
-          categories.map((category) => (
+        {filteredCategories.length > 0 &&
+          filteredCategories.map((category) => (
             <CategoryCard
+              setSelectedCategory={setSelectedCategory}
               setDetailModalOpen={setDetailModalOpen}
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
               key={category.id}
               category={category}
             />
-          ))
-        ) : (
-          <NoData />
-        )}
+          ))}
       </div>
+      {filteredCategories.length === 0 && (
+        <div className="w-full">
+          <NoData />
+        </div>
+      )}
 
       <CategoryManagementModal
         isOpen={isModalOpen}
@@ -88,8 +128,11 @@ const CategoryManagement = () => {
       />
 
       <ViewCategoryDetailModal
+        category={selectedCategory}
         open={detailModalOpen}
         setOpen={setDetailModalOpen}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
       />
     </div>
   );

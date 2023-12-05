@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ReceiptManagementModal from '~/features/ReceiptManagementModal/ReceiptManagementModal';
 import ReceiptManagementDeleteAlert from '~/features/ReceiptManagementDeleteAlert/ReceiptManagementDeleteAlert';
 import { money } from '~/utils';
@@ -13,8 +13,15 @@ import { toast } from 'react-toastify';
 import ProgressBar from '~/features/EarningTarget/ProgressBar';
 import Fallback from '~/components/Fallback';
 import NoData from '~/features/NoData/NoData';
+import useEarningStore from '~/store/useEarningStore';
 
 const ReceiptManagement = () => {
+  const [targets, fetchingTargets, fetchTargets] = useEarningStore((state) => [
+    state.targets,
+    state.fetchingTargets,
+    state.fetchTargets,
+  ]);
+
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -25,19 +32,6 @@ const ReceiptManagement = () => {
   const [receiptDetailModalOpen, setReceiptDetailModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [createEarningTarget, setCreateEarningTarget] = useState(false);
-  const [target, setTarget] = useState('10000000');
-  const [percentage, setPercentage] = useState(70);
-
-  const testData = [{ bgcolor: '#1677ff', completed: percentage }];
-
-  const calculatePercentage = () => {
-    if (calculateTotalAmount() >= 0 && target >= 0) {
-      const result = (calculateTotalAmount() / target) * 100;
-      setPercentage(result.toFixed(2)); // Làm tròn đến 2 chữ số thập phân
-    } else {
-      setPercentage(null);
-    }
-  };
 
   useEffect(() => {
     axiosClient
@@ -54,6 +48,33 @@ const ReceiptManagement = () => {
   }, []);
 
   useEffect(() => {
+    fetchTargets();
+  }, []);
+
+  const calculateTotalAmount = () => {
+    return filteredReceipts.reduce((acc, receipt) => {
+      const amount = receipt.amount;
+      return acc + amount;
+    }, 0);
+  };
+
+  const thisMonthTarget = useMemo(() => {
+    return (
+      targets.find(
+        (target) =>
+          target.month === selectedMonth && target.year === selectedYear
+      ) ?? {
+        target: 0,
+      }
+    );
+  }, [targets, selectedMonth, selectedYear]);
+
+  const percentage = useMemo(() => {
+    if (thisMonthTarget.target === 0) return 0;
+    return Math.round((calculateTotalAmount() / thisMonthTarget.target) * 100);
+  }, [thisMonthTarget]);
+
+  useEffect(() => {
     const newFilteredReceipts = receipts.filter((receipt) => {
       const receiptDate = new Date(receipt.date);
       return (
@@ -63,13 +84,6 @@ const ReceiptManagement = () => {
     });
     setFilteredReceipts(newFilteredReceipts);
   }, [receipts, selectedMonth, selectedYear]);
-
-  const calculateTotalAmount = () => {
-    return filteredReceipts.reduce((acc, receipt) => {
-      const amount = receipt.amount;
-      return acc + amount;
-    }, 0);
-  };
 
   const addReceipt = (receipt) => {
     setReceipts([...receipts, { ...receipt }]);
@@ -100,11 +114,9 @@ const ReceiptManagement = () => {
     });
   };
 
-  function handleTarget() {
-    console.log(target);
-  }
+  const testData = [{ bgcolor: '#1677ff', completed: percentage }];
 
-  if (loading) {
+  if (loading || fetchingTargets) {
     return <Fallback />;
   }
 
@@ -129,11 +141,10 @@ const ReceiptManagement = () => {
             <p
               onClick={() => {
                 setCreateEarningTarget(true);
-                handleTarget();
               }}
               className="mb-6 cursor-pointer"
             >
-              Mục tiêu: {money.formatVietnameseCurrency(target)}
+              Mục tiêu: {money.formatVietnameseCurrency(thisMonthTarget.target)}
             </p>
           </Tooltip>
           <div style={{ width: '200px' }}>
@@ -188,7 +199,7 @@ const ReceiptManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredReceipts.length > 0 ? (
+            {filteredReceipts.length > 0 &&
               filteredReceipts.map((receipt, index) => (
                 <tr
                   // onClick={() => {
@@ -231,12 +242,14 @@ const ReceiptManagement = () => {
                     />
                   </td>
                 </tr>
-              ))
-            ) : (
-              <NoData />
-            )}
+              ))}
           </tbody>
         </table>
+        {filteredReceipts.length === 0 && (
+          <div className="w-full">
+            <NoData />
+          </div>
+        )}
       </div>
 
       <button
@@ -269,8 +282,10 @@ const ReceiptManagement = () => {
       />
 
       <CreateEarningTargetModal
+        prevTarget={thisMonthTarget}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
         open={createEarningTarget}
-        setTarget={setTarget}
         setOpen={setCreateEarningTarget}
       />
     </div>
