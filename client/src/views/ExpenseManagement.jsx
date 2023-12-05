@@ -11,6 +11,7 @@ import Fallback from '~/components/Fallback';
 import PayingMoneyModal from '~/features/PayingMoney/PayingMoneyModal';
 import useCategoryStore from '~/store/useCategoryStore';
 import ExpensesDetailModal from '~/features/Expense/ExpensesDetailModal';
+import NoData from '~/features/NoData/NoData';
 
 const ExpenseManagement = () => {
   const [payingMoney, fetchingPayingMoney, fetchPayingMoney] =
@@ -164,45 +165,49 @@ const ExpenseManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredExpeneses.map((expense) => (
-              <tr key={expense.id} className="border-b cursor-pointer">
-                <td className="p-4">{expense.name}</td>
-                <td className="p-4">{expense.category.name}</td>
-                <td className="p-4">
-                  {money.formatVietnameseCurrency(expense.amount)}
-                </td>
-                <td className="p-4 ">{expense.date}</td>
-                <td
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-4 flex items-center space-x-2"
-                >
-                  <Button
-                    onClick={() => {
-                      setDetailModalOpen(true);
-                      setSelectedPayingMoney(expense);
-                    }}
-                    className="text-blue-500"
+            {filteredExpeneses.length > 0 ? (
+              filteredExpeneses.map((expense) => (
+                <tr key={expense.id} className="border-b cursor-pointer">
+                  <td className="p-4">{expense.name}</td>
+                  <td className="p-4">{expense.category.name}</td>
+                  <td className="p-4">
+                    {money.formatVietnameseCurrency(expense.amount)}
+                  </td>
+                  <td className="p-4 ">{expense.date}</td>
+                  <td
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-4 flex items-center space-x-2"
                   >
-                    <FaEye />
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setModalOpen({
-                        type: 'edit',
-                        state: true,
-                      });
-                      setSelectedPayingMoney(expense);
-                    }}
-                  >
-                    <FaEdit />
-                  </Button>
-                  <ExpenseManagementDeleteAlert
-                    expense={expense}
-                    deleteExpense={deleteExpense}
-                  />
-                </td>
-              </tr>
-            ))}
+                    <Button
+                      onClick={() => {
+                        setDetailModalOpen(true);
+                        setSelectedPayingMoney(expense);
+                      }}
+                      className="text-blue-500"
+                    >
+                      <FaEye />
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setModalOpen({
+                          type: 'edit',
+                          state: true,
+                        });
+                        setSelectedPayingMoney(expense);
+                      }}
+                    >
+                      <FaEdit />
+                    </Button>
+                    <ExpenseManagementDeleteAlert
+                      expense={expense}
+                      deleteExpense={deleteExpense}
+                    />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <NoData />
+            )}
           </tbody>
         </table>
       </div>
