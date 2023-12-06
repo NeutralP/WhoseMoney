@@ -78,7 +78,7 @@ const ViewCategoryDetailModal = ({
       (payLimit.limit - totalPay) / numberOfDaysInCurrentMonth
     );
     return value < 0 ? 0 : value;
-  }, []);
+  }, [payLimit, totalPay, numberOfDaysInCurrentMonth]);
 
   const average = useMemo(() => {
     const payList = category.pay_list.filter((pay) => {

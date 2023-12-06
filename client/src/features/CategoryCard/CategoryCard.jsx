@@ -46,7 +46,7 @@ const CategoryCard = ({
       (payLimit.limit - totalPay) / numberOfDaysInCurrentMonth
     );
     return value < 0 ? 0 : value;
-  }, []);
+  }, [payLimit, totalPay, numberOfDaysInCurrentMonth]);
 
   const testData = [{ bgcolor: '#1677ff', completed: percentage }];
 

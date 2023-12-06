@@ -71,7 +71,10 @@ const ReceiptManagement = () => {
 
   const percentage = useMemo(() => {
     if (thisMonthTarget.target === 0) return 0;
-    return Math.round((calculateTotalAmount() / thisMonthTarget.target) * 100);
+    const value = Math.round(
+      (calculateTotalAmount() / thisMonthTarget.target) * 100
+    );
+    return value > 100 ? 100 : value;
   }, [thisMonthTarget]);
 
   useEffect(() => {
