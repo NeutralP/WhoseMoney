@@ -25,7 +25,7 @@ const EditReceiptModal = ({
 
   useEffect(() => {
     setNewReceipt(receipt);
-  }, [receipt.id]);
+  }, [receipt]);
 
   const handleCancel = () => {
     if (objUtils.compareObj(receipt, newReceipt)) {
