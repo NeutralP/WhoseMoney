@@ -28,6 +28,9 @@ const usePayingMoneyStore = create((set) => ({
   setPayingMoneyActionLoading: (payingMoneyActionLoading) =>
     set({ payingMoneyActionLoading }),
 
+  createErrors: { state: false },
+  setCreateErrors: (createErrors) => set({ createErrors }),
+
   createNewPayingMoney: (payingMoney, setOpen) => {
     set({ payingMoneyActionLoading: true });
     axiosClient
@@ -36,6 +39,20 @@ const usePayingMoneyStore = create((set) => ({
         set((state) => ({ payingMoney: [data.data, ...state.payingMoney] }));
       })
       .catch((error) => {
+        if (error.response && error.response.status === 422) {
+          const responseErrors = error.response.data.errors;
+
+          let errors = {
+            name: responseErrors.name || [],
+            amount: responseErrors.amount || [],
+            category: responseErrors.category_id || [],
+            date: responseErrors.date || [],
+            state: true,
+          };
+
+          set({ createErrors: errors });
+        }
+
         console.log(error);
         toast.error('Thêm khoản chi thất bại.', {
           autoClose: 1500,
@@ -50,6 +67,9 @@ const usePayingMoneyStore = create((set) => ({
       });
   },
 
+  updateErrors: { state: false },
+  setUpdateErrors: (updateErrors) => set({ updateErrors }),
+
   udpatePayingMoney: (id, payingMoney, setOpen) => {
     set({ payingMoneyActionLoading: true });
     axiosClient
@@ -62,6 +82,19 @@ const usePayingMoneyStore = create((set) => ({
         }));
       })
       .catch((error) => {
+        if (error.response && error.response.status === 422) {
+          const responseErrors = error.response.data.errors;
+
+          let errors = {
+            name: responseErrors.name || [],
+            amount: responseErrors.amount || [],
+            date: responseErrors.date || [],
+            state: true,
+          };
+
+          set({ updateErrors: errors });
+        }
+
         console.log(error);
         toast.error('Cập nhật khoản chi thất bại.', {
           autoClose: 1500,

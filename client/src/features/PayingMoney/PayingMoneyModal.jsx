@@ -6,7 +6,7 @@ import axiosClient from '~/axios';
 import { userStateContext } from '~/contexts/ContextProvider';
 import useCategoryStore from '~/store/useCategoryStore';
 import usePayingMoneyStore from '~/store/usePayingMoneyStore';
-import { objUtils } from '~/utils';
+import { objUtils, shouldShowError } from '~/utils';
 import { formatDate } from '~/utils/time';
 
 // Use for both add and edit
@@ -36,6 +36,10 @@ const PayingMoneyModal = ({
     amount: '0',
     category_id: '',
     date: new Date(),
+  });
+
+  const [errors, setErrors] = useState({
+    state: false,
   });
 
   const categoriesOptions = useMemo(() => {
@@ -74,21 +78,35 @@ const PayingMoneyModal = ({
           toast.success('Chỉnh sửa khoản chi thành công.', {
             autoClose: 1500,
           });
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error('Chỉnh sửa khoản chi thất bại.', {
-            autoClose: 1500,
-          });
-        })
-        .finally(() => {
+
           setOpen(false);
           fetchUser();
           if (openFromCategory) {
             fetchCategories();
             setCategoryDetailModalOpen(false);
           }
-        });
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 422) {
+            const responseErrors = error.response.data.errors;
+
+            let errors = {
+              name: responseErrors.name || [],
+              amount: responseErrors.amount || [],
+              category: responseErrors.category_id || [],
+              date: responseErrors.date || [],
+              state: true,
+            };
+
+            setErrors(errors);
+          }
+
+          console.log(error);
+          toast.error('Chỉnh sửa khoản chi thất bại.', {
+            autoClose: 1500,
+          });
+        })
+        .finally(() => {});
       setDetailModalOpen(false);
     } else {
       axiosClient
@@ -99,17 +117,31 @@ const PayingMoneyModal = ({
           toast.success('Thêm khoản chi thành công.', {
             autoClose: 1500,
           });
+
+          setOpen(false);
+          fetchUser();
         })
         .catch((error) => {
+          if (error.response && error.response.status === 422) {
+            const responseErrors = error.response.data.errors;
+
+            let errors = {
+              name: responseErrors.name || [],
+              amount: responseErrors.amount || [],
+              category: responseErrors.category_id || [],
+              date: responseErrors.date || [],
+              state: true,
+            };
+
+            setErrors(errors);
+          }
+
           console.log(error);
           toast.error('Thêm khoản chi thất bại.', {
             autoClose: 1500,
           });
         })
-        .finally(() => {
-          setOpen(false);
-          fetchUser();
-        });
+        .finally(() => {});
     }
   };
 
@@ -121,6 +153,7 @@ const PayingMoneyModal = ({
       width={525}
       centered
       onOk={handleOk}
+      afterClose={() => setErrors({ state: false })}
       className="custom-modal"
       zIndex={1005}
     >
@@ -137,11 +170,25 @@ const PayingMoneyModal = ({
         <Input
           placeholder="Name"
           className=""
+          name="name"
           value={newPayingMoney.name}
           onChange={(e) =>
             setNewPayingMoney({ ...newPayingMoney, name: e.target.value })
           }
+          status={
+            shouldShowError(errors, 'name', newPayingMoney.name.length === 0) &&
+            'error'
+          }
         />
+        <div></div>
+        <div>
+          {shouldShowError(errors, 'name', newPayingMoney.name.length === 0) &&
+            errors.name.map((error, index) => (
+              <p className="text-sm text-red-600 mt-2" key={index}>
+                {error}
+              </p>
+            ))}
+        </div>
         {type === 'add' && (
           <>
             <label className="text-base font-medium">Danh mục:</label>
@@ -155,6 +202,19 @@ const PayingMoneyModal = ({
               }
               value={newPayingMoney.category_id}
             />
+            <div></div>
+            <div>
+              {shouldShowError(
+                errors,
+                'category',
+                newPayingMoney.category_id.length === 0
+              ) &&
+                errors.category.map((error, index) => (
+                  <p className="text-sm text-red-600 mt-2" key={index}>
+                    {error}
+                  </p>
+                ))}
+            </div>
           </>
         )}
         <label className="text-base font-medium">Số tiền:</label>
@@ -162,10 +222,32 @@ const PayingMoneyModal = ({
           placeholder="Amount"
           className=""
           value={newPayingMoney.amount}
+          name="amount"
           onChange={(e) =>
             setNewPayingMoney({ ...newPayingMoney, amount: e.target.value })
           }
+          status={
+            shouldShowError(
+              errors,
+              'amount',
+              newPayingMoney.amount.length === 0
+            ) && 'error'
+          }
         />
+        <div></div>
+        <div>
+          {shouldShowError(
+            errors,
+            'amount',
+            newPayingMoney.amount.length === 0
+          ) &&
+            errors.amount.map((error, index) => (
+              <p className="text-sm text-red-600 mt-2" key={index}>
+                {error}
+              </p>
+            ))}
+        </div>
+
         <label className="text-base font-medium">Ngày:</label>
         <DatePicker
           style={{ width: '100%' }}
@@ -177,7 +259,21 @@ const PayingMoneyModal = ({
             });
           }}
           value={dayjs(new Date(newPayingMoney.date))}
+          name="date"
+          status={
+            shouldShowError(errors, 'date', newPayingMoney.date.length === 0) &&
+            'error'
+          }
         />
+        <div></div>
+        <div>
+          {shouldShowError(errors, 'date', newPayingMoney.date.length === 0) &&
+            errors.date.map((error, index) => (
+              <p className="text-sm text-red-600 mt-2" key={index}>
+                {error}
+              </p>
+            ))}
+        </div>
       </div>
     </Modal>
   );

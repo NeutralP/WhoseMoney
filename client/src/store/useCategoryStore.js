@@ -24,7 +24,10 @@ const useCategoryStore = create((set) => ({
       });
   },
 
-  createCategory: (category) => {
+  createErrors: { state: false },
+  setCreateErrors: (createErrors) => set({ createErrors }),
+
+  createCategory: (category, setOpen) => {
     axiosClient
       .post('categories', category)
       .then(({ data }) => {
@@ -35,8 +38,22 @@ const useCategoryStore = create((set) => ({
         toast.success('Thêm danh mục thành công.', {
           autoClose: 1500,
         });
+
+        setOpen(false);
       })
       .catch((error) => {
+        if (error.response && error.response.status === 422) {
+          const responseErrors = error.response.data.errors;
+
+          let errors = {
+            name: responseErrors.name || [],
+            limit: responseErrors.limit || [],
+            state: true,
+          };
+
+          set({ createErrors: errors });
+        }
+
         console.log(error);
 
         toast.error('Thêm danh mục thất bại.', {
