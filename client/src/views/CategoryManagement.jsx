@@ -122,10 +122,7 @@ const CategoryManagement = () => {
         </div>
       )}
 
-      <CategoryManagementModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-      />
+      <CategoryManagementModal isOpen={isModalOpen} setOpen={setModalOpen} />
 
       <ViewCategoryDetailModal
         category={selectedCategory}

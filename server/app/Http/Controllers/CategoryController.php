@@ -51,6 +51,11 @@ class CategoryController extends Controller
                     'message' => 'Created',
                 ], 201);
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -92,6 +97,11 @@ class CategoryController extends Controller
                     'message' => 'Updated',
                 ], 200);
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -124,6 +134,11 @@ class CategoryController extends Controller
                     'message' => 'Updated',
                 ], 200);
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),

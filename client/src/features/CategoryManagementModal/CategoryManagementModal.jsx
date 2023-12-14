@@ -5,13 +5,17 @@ import { Input } from 'antd';
 import { HiOutlineSwitchVertical } from 'react-icons/hi';
 import dayjs from 'dayjs';
 import useCategoryStore from '~/store/useCategoryStore';
+import { shouldShowError } from '~/utils';
 
 const numberOfDaysInCurrentMonth = dayjs().daysInMonth();
 
-const CategoryManagementModal = ({ isOpen, onClose }) => {
+const CategoryManagementModal = ({ isOpen, setOpen }) => {
   const modalRef = useRef();
 
-  const [createCategory] = useCategoryStore((state) => [state.createCategory]);
+  const [createErrors, createCategory] = useCategoryStore((state) => [
+    state.createErrors,
+    state.createCategory,
+  ]);
 
   const [categoryData, setCategoryData] = useState({
     name: '',
@@ -23,14 +27,14 @@ const CategoryManagementModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
-        onClose();
+        setOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [modalRef, onClose]);
+  }, [modalRef, setOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -47,13 +51,15 @@ const CategoryManagementModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createCategory({
-      name: categoryData.name,
-      limit: mode
-        ? categoryData.limit * numberOfDaysInCurrentMonth
-        : categoryData.limit,
-    });
-    onClose();
+    createCategory(
+      {
+        name: categoryData.name,
+        limit: mode
+          ? categoryData.limit * numberOfDaysInCurrentMonth
+          : categoryData.limit,
+      },
+      setOpen
+    );
   };
 
   if (!isOpen) return null;
@@ -67,7 +73,7 @@ const CategoryManagementModal = ({ isOpen, onClose }) => {
         <form className="bg-white" onSubmit={handleSubmit}>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => setOpen(false)}
             className="float-right font-bold"
           >
             X
@@ -82,8 +88,22 @@ const CategoryManagementModal = ({ isOpen, onClose }) => {
               name="name"
               value={categoryData.name}
               placeholder="Tên danh mục"
-              status={categoryData.name.length === 0 && 'error'}
+              status={
+                shouldShowError(
+                  createErrors,
+                  'name',
+                  categoryData.name.length === 0
+                ) && 'error'
+              }
             />
+            {createErrors.state &&
+              createErrors.name.length > 0 &&
+              categoryData.name.length === 0 &&
+              createErrors.name.map((error, index) => (
+                <p className="text-sm text-red-600 mt-2" key={index}>
+                  {error}
+                </p>
+              ))}
           </div>
 
           <div className="mb-4">
@@ -99,6 +119,13 @@ const CategoryManagementModal = ({ isOpen, onClose }) => {
                   : categoryData.limit
               }
               disabled={!mode}
+              status={
+                shouldShowError(
+                  createErrors,
+                  'limit',
+                  categoryData.limit === 0
+                ) && 'error'
+              }
             />
           </div>
 
@@ -118,9 +145,23 @@ const CategoryManagementModal = ({ isOpen, onClose }) => {
               placeholder="Nhập số tiền"
               value={mode ? categoryData.limit * 30 : categoryData.limit}
               disabled={mode}
-              status={categoryData.limit === '0' && 'error'}
+              status={
+                shouldShowError(
+                  createErrors,
+                  'limit',
+                  categoryData.limit === 0
+                ) && 'error'
+              }
             />
           </div>
+          {createErrors.state &&
+            createErrors.limit.length > 0 &&
+            categoryData.limit.length === 0 &&
+            createErrors.limit.map((error, index) => (
+              <p className="text-sm text-red-600 mt-2" key={index}>
+                {error}
+              </p>
+            ))}
 
           <button
             id="submit"
