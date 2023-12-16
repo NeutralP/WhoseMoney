@@ -4,12 +4,13 @@ import { getDateLeftInCurrentMonth } from '~/utils/time';
 import { Card, Typography } from 'antd';
 import ProgressBar from '~/features/EarningTarget/ProgressBar';
 import NoData from '~/features/NoData/NoData';
+import EditSavingLimitModal from '~/features/EditSavingLimitModal/EditSavingLimitModal';
 
 const SaveManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [filteredSavings, setFilteredSavings] = useState([]);
-
+  const [editSavingLimitModal, setEditSavingLimitModal] = useState(false);
   const [savingMoney, setSavingMoney] = useState([
     {
       month: 10,
@@ -194,9 +195,18 @@ const SaveManagement = () => {
         </div>
       </div>
 
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded">
+      <button
+        onClick={() => setEditSavingLimitModal(true)}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded"
+      >
         Cài hạn mức
       </button>
+      <EditSavingLimitModal
+        open={editSavingLimitModal}
+        savingMoney={savingMoney}
+        setSavingMoney={setSavingMoney}
+        setOpen={setEditSavingLimitModal}
+      />
     </div>
   );
 };
