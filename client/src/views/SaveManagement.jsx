@@ -4,11 +4,15 @@ import { getDateLeftInCurrentMonth } from '~/utils/time';
 import { Card, Typography } from 'antd';
 import ProgressBar from '~/features/EarningTarget/ProgressBar';
 import NoData from '~/features/NoData/NoData';
+import SaveDetailModal from '~/features/SaveManagement/SaveModal';
+import AddSaveModal from '~/features/SaveManagement/AddSaveModal';
 
 const SaveManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [filteredSavings, setFilteredSavings] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   const [savingMoney, setSavingMoney] = useState([
     {
@@ -92,7 +96,6 @@ const SaveManagement = () => {
           Số ngày còn lại trong tháng: {getDateLeftInCurrentMonth()}
         </p>
       </div>
-
       <div className="flex items-center justify-between mb-2">
         <div>
           <p className="">
@@ -107,7 +110,6 @@ const SaveManagement = () => {
           </p>
         </div>
       </div>
-
       <div className="flex items-center justify-between mt-4">
         <div>
           <div style={{ width: '200px' }}>
@@ -168,6 +170,9 @@ const SaveManagement = () => {
                   ? `Còn lại ${getDateLeftInCurrentMonth()} ngày`
                   : 'Hoàn thành'
               }
+              onClick={() => {
+                setDetailModalOpen(true);
+              }}
             >
               <div className="flex justify-between mb-2 mt-2">
                 <p>
@@ -193,10 +198,23 @@ const SaveManagement = () => {
           )}
         </div>
       </div>
-
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded">
+      <SaveDetailModal
+        month={selectedMonth}
+        year={selectedYear}
+        saving={thisMonthSavingMoney}
+        open={detailModalOpen}
+        setOpen={setDetailModalOpen}
+      ></SaveDetailModal>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded"
+        onClick={() => setModalOpen(true)}
+      >
+        Thêm khoản tiết kiệm
+      </button>
+      <button className="me-4 bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded">
         Cài hạn mức
       </button>
+      <AddSaveModal isOpen={modalOpen} setModalOpen={setModalOpen} />
     </div>
   );
 };
