@@ -9,6 +9,11 @@ import usePayingMoneyStore from '~/store/usePayingMoneyStore';
 import { objUtils, shouldShowError } from '~/utils';
 import { formatDate } from '~/utils/time';
 
+const disabledDate = (current) => {
+  // Can not select days before today and today
+  return current < dayjs().startOf('day');
+};
+
 // Use for both add and edit
 const PayingMoneyModal = ({
   type = 'add',
@@ -250,6 +255,7 @@ const PayingMoneyModal = ({
 
         <label className="text-base font-medium">Ngày:</label>
         <DatePicker
+          disabledDate={disabledDate}
           style={{ width: '100%' }}
           onChange={(date) => {
             console.log(date);

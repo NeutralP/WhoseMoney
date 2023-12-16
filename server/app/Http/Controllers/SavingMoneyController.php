@@ -26,6 +26,41 @@ class SavingMoneyController extends Controller
         }
     }
 
+    public function show($month, $year)
+    {
+        try {
+            // $data = $request->validate([
+            //     'month' => 'required|integer',
+            //     'year' => 'required|integer',
+            // ]);
+            $user = auth()->user();
+            // Calculate the months and years for the current month, the previous month, and the month before that
+            $months = [$month, ($month - 1 + 12) % 12 ?: 12, ($month - 2 + 12) % 12 ?: 12];
+            $years = [$year, $month == 1 ? $year - 1 : $year, $month <= 2 ? $year - 1 : $year];
+
+            $saving_money = $user->savingMoney()
+                ->whereIn('year', $years)
+                ->whereIn('month', $months)
+                ->get();
+
+            if ($saving_money) {
+                return response()->json([
+                    'data' => $saving_money,
+                    'message' => 'Get data successfully.',
+                ], 200);
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         try {
@@ -35,8 +70,13 @@ class SavingMoneyController extends Controller
                 'description' => 'required|string',
             ]);
 
+            list($year, $month, $day) = explode('-', $data['date']);
+            $data['month'] = $month;
+            $data['year'] = $year;
+
             $user = auth()->user();
             $new_saving = $user->savingMoney()->create($data);
+
 
             if ($new_saving) {
                 return response()->json([

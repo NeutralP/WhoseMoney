@@ -7,6 +7,10 @@ import NoData from '~/features/NoData/NoData';
 import SaveDetailModal from '~/features/SaveManagement/SaveModal';
 import AddSaveModal from '~/features/SaveManagement/AddSaveModal';
 import EditSavingLimitModal from '~/features/EditSavingLimitModal/EditSavingLimitModal';
+import useSavingStore from '~/store/useSavingStore';
+import Fallback from '~/components/Fallback';
+
+const { Title } = Typography;
 
 const SaveManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -15,32 +19,22 @@ const SaveManagement = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [editSavingLimitModal, setEditSavingLimitModal] = useState(false);
-  const [savingMoney, setSavingMoney] = useState([
-    {
-      month: 10,
-      year: 2023,
-      description: 'description',
-      saving_amount: 10000000,
-      saving_target: 50000000,
-      saving_id: 1,
-    },
-    {
-      month: 11,
-      year: 2023,
-      description: 'description',
-      saving_amount: 60000000,
-      saving_target: 60000000,
-      saving_id: 2,
-    },
-    {
-      month: 12,
-      year: 2023,
-      description: 'description',
-      saving_amount: 30000000,
-      saving_target: 120000000,
-      saving_id: 3,
-    },
+
+  const [
+    savingMoney,
+    setSavingMoney,
+    fetchingSavingMoney,
+    fetchSavingMoneyByMonth,
+  ] = useSavingStore((state) => [
+    state.savingMoney,
+    state.setSavingMoney,
+    state.fetchingSavingMoney,
+    state.fetchSavingMoneyByMonth,
   ]);
+
+  useEffect(() => {
+    fetchSavingMoneyByMonth(selectedMonth, selectedYear);
+  }, [selectedMonth, selectedYear]);
 
   useEffect(() => {
     const newFilteredSavings = savingMoney.filter((savingMoney) => {
@@ -58,18 +52,16 @@ const SaveManagement = () => {
         (saving) =>
           saving.month === selectedMonth && saving.year === selectedYear
       ) ?? {
-        saving_amount: 0,
-        saving_target: 0,
+        amount: 0,
+        target: 0,
       }
     );
   }, [savingMoney, selectedMonth, selectedYear]);
 
   const percentage = useMemo(() => {
-    if (thisMonthSavingMoney.saving_amount === 0) return 0;
+    if (thisMonthSavingMoney.amount === 0) return 0;
     const value = Math.round(
-      (thisMonthSavingMoney.saving_amount /
-        thisMonthSavingMoney.saving_target) *
-        100
+      (thisMonthSavingMoney.amount / thisMonthSavingMoney.target) * 100
     );
     return value;
   }, [thisMonthSavingMoney]);
@@ -77,12 +69,15 @@ const SaveManagement = () => {
 
   const calculateTotalAmount = () => {
     return savingMoney.reduce((acc, saving) => {
-      const amount = saving.saving_amount;
+      const amount = saving.amount;
       return acc + amount;
     }, 0);
   };
 
-  const { Title } = Typography;
+  if (fetchingSavingMoney) {
+    return <Fallback />;
+  }
+
   return (
     <div className="mt-8 overflow-hidden container mx-auto p-4 bg-white shadow rounded-lg">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">
@@ -91,7 +86,7 @@ const SaveManagement = () => {
       <div className="flex container justify-between mb-3">
         <p className="">
           Tổng tiền tiết kiệm:{' '}
-          {money.formatVietnameseCurrency(calculateTotalAmount())}
+          {/* {money.formatVietnameseCurrency(calculateTotalAmount())} */}
         </p>
         <p className="">
           Số ngày còn lại trong tháng: {getDateLeftInCurrentMonth()}
@@ -101,13 +96,13 @@ const SaveManagement = () => {
         <div>
           <p className="">
             Tiết kiệm tháng này:{' '}
-            {money.formatVietnameseCurrency(thisMonthSavingMoney.saving_amount)}
+            {/* {money.formatVietnameseCurrency(thisMonthSavingMoney.amount)} */}
           </p>
         </div>
         <div>
           <p className="">
             Hạn mức tháng này:{' '}
-            {money.formatVietnameseCurrency(thisMonthSavingMoney.saving_target)}
+            {/* {money.formatVietnameseCurrency(thisMonthSavingMoney.target)} */}
           </p>
         </div>
       </div>
@@ -178,18 +173,13 @@ const SaveManagement = () => {
               <div className="flex justify-between mb-2 mt-2">
                 <p>
                   Tổng tiền tiết kiệm:{' '}
-                  {money.formatVietnameseCurrency(saving.saving_amount)}
+                  {/* {money.formatVietnameseCurrency(saving.amount)} */}
                 </p>
                 <span>
-                  {Math.round(
-                    (saving.saving_amount * 100) / saving.saving_target
-                  )}
-                  %
+                  {/* {Math.round((saving.amount * 100) / saving.target)}% */}
                 </span>
               </div>
-              <p>
-                Hạn mức: {money.formatVietnameseCurrency(saving.saving_target)}
-              </p>
+              {/* <p>Hạn mức: {money.formatVietnameseCurrency(saving.target)}</p> */}
             </Card>
           ))}
           {filteredSavings.length === 0 && (
@@ -211,14 +201,16 @@ const SaveManagement = () => {
       >
         Cài hạn mức
       </button>
+
       <AddSaveModal isOpen={modalOpen} setModalOpen={setModalOpen} />
+
       <SaveDetailModal
         month={selectedMonth}
         year={selectedYear}
         saving={thisMonthSavingMoney}
         open={detailModalOpen}
         setOpen={setDetailModalOpen}
-      ></SaveDetailModal>
+      />
 
       <EditSavingLimitModal
         open={editSavingLimitModal}

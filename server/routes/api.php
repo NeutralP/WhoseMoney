@@ -5,6 +5,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EarningMoneyController;
 use App\Http\Controllers\EarningTargetController;
 use App\Http\Controllers\PayingMoneyController;
+use App\Http\Controllers\SavingMoneyController;
+use App\Http\Controllers\SavingTargetController;
 use App\Http\Controllers\SocialiteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +73,27 @@ Route::controller(PayingMoneyController::class)->group(function () {
         Route::post('/', 'store');
         Route::patch('/{payingMoneyId}', 'update');
         Route::delete('/{payingMoneyId}', 'destroy');
+    });
+});
+
+// Saving handlers
+Route::controller(SavingMoneyController::class)->group(function () {
+    Route::prefix('saving-money')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{month}/{year}', 'show');
+        Route::post('/', 'store');
+        Route::patch('/{savingId}', 'update');
+        Route::delete('/{savingId}', 'destroy');
+    });
+});
+
+// Saving target controller
+Route::controller(SavingTargetController::class)->group(function () {
+    Route::prefix('saving-target')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::patch('/{targetId}', 'update');
+        Route::delete('/{targetId}', 'delete');
     });
 });
 
