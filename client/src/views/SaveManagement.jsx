@@ -199,13 +199,6 @@ const SaveManagement = () => {
           )}
         </div>
       </div>
-      <SaveDetailModal
-        month={selectedMonth}
-        year={selectedYear}
-        saving={thisMonthSavingMoney}
-        open={detailModalOpen}
-        setOpen={setDetailModalOpen}
-      ></SaveDetailModal>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded"
         onClick={() => setModalOpen(true)}
@@ -214,11 +207,18 @@ const SaveManagement = () => {
       </button>
       <button
         onClick={() => setEditSavingLimitModal(true)}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded"
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right mr-4 rounded"
       >
         Cài hạn mức
       </button>
       <AddSaveModal isOpen={modalOpen} setModalOpen={setModalOpen} />
+      <SaveDetailModal
+        month={selectedMonth}
+        year={selectedYear}
+        saving={thisMonthSavingMoney}
+        open={detailModalOpen}
+        setOpen={setDetailModalOpen}
+      ></SaveDetailModal>
 
       <EditSavingLimitModal
         open={editSavingLimitModal}
