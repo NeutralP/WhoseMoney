@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
 
-            $table->string('saving');
-            $table->integer('month');
+            $table->string('amount');
+            $table->string('date');
             $table->string('description');
 
             $table->foreign('user_id')->references('id')->on('users');
