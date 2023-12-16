@@ -4,11 +4,17 @@ import { getDateLeftInCurrentMonth } from '~/utils/time';
 import { Card, Typography } from 'antd';
 import ProgressBar from '~/features/EarningTarget/ProgressBar';
 import NoData from '~/features/NoData/NoData';
+import SaveDetailModal from '~/features/SaveManagement/SaveModal';
 
 const SaveManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [filteredSavings, setFilteredSavings] = useState([]);
+  const [modalOpen, setModalOpen] = useState({
+    state: false,
+    type: 'add',
+  });
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   const [savingMoney, setSavingMoney] = useState([
     {
@@ -168,6 +174,9 @@ const SaveManagement = () => {
                   ? `Còn lại ${getDateLeftInCurrentMonth()} ngày`
                   : 'Hoàn thành'
               }
+              onClick={() => {
+                setDetailModalOpen(true);
+              }}
             >
               <div className="flex justify-between mb-2 mt-2">
                 <p>
@@ -193,8 +202,17 @@ const SaveManagement = () => {
           )}
         </div>
       </div>
-
+      <SaveDetailModal
+        month={selectedMonth}
+        year={selectedYear}
+        saving={thisMonthSavingMoney}
+        open={detailModalOpen}
+        setOpen={setDetailModalOpen}
+      ></SaveDetailModal>
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded">
+        Thêm khoản tiết kiệm
+      </button>
+      <button className="me-4 bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 float-right  rounded">
         Cài hạn mức
       </button>
     </div>
