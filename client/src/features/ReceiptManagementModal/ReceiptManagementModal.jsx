@@ -6,6 +6,11 @@ import { formatDate } from '~/utils/time';
 import axiosClient from '~/axios';
 import { userStateContext } from '~/contexts/ContextProvider';
 
+const disabledDate = (current) => {
+  // Can not select days before today and today
+  return current < dayjs().startOf('day');
+};
+
 const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
   const { currentUser, fetchUser } = userStateContext();
 

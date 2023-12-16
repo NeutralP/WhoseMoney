@@ -5,6 +5,11 @@ import { toast } from 'react-toastify';
 import axiosClient from '~/axios';
 import useEarningStore from '~/store/useEarningStore';
 
+const disabledDate = (current) => {
+  // Can not select days before today and today
+  return current < dayjs().startOf('day');
+};
+
 const CreateEarningTargetModal = ({
   prevTarget,
   selectedMonth,
@@ -93,6 +98,7 @@ const CreateEarningTargetModal = ({
           <div className="text-base font-medium truncate">Thời gian</div>
           <div>
             <DatePicker
+              disabledDate={disabledDate}
               className="w-full"
               format="DD/MM/YYYY"
               picker="month"

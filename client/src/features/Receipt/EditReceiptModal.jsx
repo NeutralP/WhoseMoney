@@ -7,6 +7,11 @@ import useGlobalModalStore from '~/store/useGlobalModalStore';
 import { objUtils } from '~/utils';
 import { formatDate } from '~/utils/time';
 
+const disabledDate = (current) => {
+  // Can not select days before today and today
+  return current < dayjs().startOf('day');
+};
+
 const EditReceiptModal = ({
   receipt,
   setSelectedReceipt,
@@ -22,6 +27,8 @@ const EditReceiptModal = ({
     state.setConfirmModal,
     state.resetConfirmModal,
   ]);
+
+  const [errors, setErrors] = useState({ state: false });
 
   useEffect(() => {
     setNewReceipt(receipt);
@@ -113,6 +120,7 @@ const EditReceiptModal = ({
           <div>
             <DatePicker
               style={{ width: '100%' }}
+              disabledDate={disabledDate}
               onChange={(date) => {
                 console.log(date);
                 setNewReceipt({ ...newReceipt, date: formatDate(date['$d']) });

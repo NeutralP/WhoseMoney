@@ -16,6 +16,8 @@ class SavingMoney extends Model
         'user_id',
         'amount',
         'date',
+        'month',
+        'year',
         'description',
     ];
 
