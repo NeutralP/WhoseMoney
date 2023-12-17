@@ -18,8 +18,16 @@ const disabledDate = (current) => {
   return current < dayjs().startOf('day');
 };
 
-const AddSaveModal = ({ isOpen, setModalOpen }) => {
+const AddSaveModal = ({
+  isOpen,
+  setModalOpen,
+  selectedMonth,
+  selectedYear,
+}) => {
   const [saving, setSaving] = useState(defaultSaving);
+
+  const [totalSaving] = useSavingStore((state) => [state.totalSaving]);
+
   const [
     createSavingMoney,
     createSavingMoneyErrors,
@@ -40,7 +48,7 @@ const AddSaveModal = ({ isOpen, setModalOpen }) => {
       open={isOpen}
       onCancel={closeModal}
       onOk={() => {
-        createSavingMoney(saving, setModalOpen);
+        createSavingMoney(saving, setModalOpen, selectedMonth, selectedYear);
       }}
       title={'Thêm khoản tiết kiệm'}
       width={525}
@@ -52,9 +60,13 @@ const AddSaveModal = ({ isOpen, setModalOpen }) => {
       <div className="py-2 grid grid-cols-[120px_1fr] gap-y-4 items-center">
         <>
           <p className="text-base font-medium">Tiết kiệm trước:</p>
-          <p>{money.formatVietnameseCurrency(100000000)}</p>
+          <p>{money.formatVietnameseCurrency(totalSaving)}</p>
           <p className="text-base font-medium">Tiết kiệm sau:</p>
-          <p>{money.formatVietnameseCurrency(100000000)}</p>
+          <p>
+            {money.formatVietnameseCurrency(
+              Number(totalSaving) + Number(saving.amount)
+            )}
+          </p>
         </>
 
         <label className="text-base font-medium">Số tiền:</label>

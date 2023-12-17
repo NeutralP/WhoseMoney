@@ -5,6 +5,7 @@ import './ReceiptManagementModal.scss';
 import { formatDate } from '~/utils/time';
 import axiosClient from '~/axios';
 import { userStateContext } from '~/contexts/ContextProvider';
+import { cn, shouldShowError } from '~/utils';
 
 const disabledDate = (current) => {
   // Can not select days before today and today
@@ -22,6 +23,7 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
     amount: '',
     date: '',
   });
+  const [errors, setErrors] = useState({ state: false });
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -48,17 +50,29 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     receiptData.date = formatDate(startDate);
-    onSave(receiptData);
-    console.log(receiptData);
-    onClose();
-
     axiosClient
       .post('/earning-money', receiptData)
       .then(() => {
+        onSave(receiptData);
+        onClose();
+
         fetchUser();
       })
-      .catch((err) => {
-        console.error(err);
+      .catch((error) => {
+        if (error.response && error.response.status === 422) {
+          const responseErrors = error.response.data.errors;
+
+          let errors = {
+            name: responseErrors.name || [],
+            source: responseErrors.source || [],
+            date: responseErrors.date || [],
+            amount: responseErrors.amount || [],
+            state: true,
+          };
+
+          setErrors(errors);
+        }
+        console.error(error);
       });
   };
 
@@ -104,8 +118,21 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
               name="name"
               value={receiptData.name}
               placeholder="Tên khoản thu"
-              className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2"
+              className={cn(
+                'border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2',
+                shouldShowError(
+                  errors,
+                  'name',
+                  receiptData.name.length === 0
+                ) && 'border-red-600'
+              )}
             />
+            {shouldShowError(errors, 'name', receiptData.name.length === 0) &&
+              errors.name.map((error, index) => (
+                <p className="text-sm text-red-600 mt-2" key={index}>
+                  {error}
+                </p>
+              ))}
           </div>
 
           <div className="mb-4">
@@ -116,8 +143,25 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
               name="source"
               value={receiptData.source}
               placeholder="Tên nguồn tiền"
-              className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2"
+              className={cn(
+                'border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2',
+                shouldShowError(
+                  errors,
+                  'source',
+                  receiptData.source.length === 0
+                ) && 'border-red-600'
+              )}
             />
+            {shouldShowError(
+              errors,
+              'source',
+              receiptData.source.length === 0
+            ) &&
+              errors.source.map((error, index) => (
+                <p className="text-sm text-red-600 mt-2" key={index}>
+                  {error}
+                </p>
+              ))}
           </div>
 
           <div className="mb-4">
@@ -128,8 +172,25 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
               name="amount"
               placeholder="Số Tiền"
               value={receiptData.amount}
-              className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2"
+              className={cn(
+                'border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2',
+                shouldShowError(
+                  errors,
+                  'amount',
+                  receiptData.amount.length === 0
+                ) && 'border-red-600'
+              )}
             />
+            {shouldShowError(
+              errors,
+              'amount',
+              receiptData.amount.length === 0
+            ) &&
+              errors.amount.map((error, index) => (
+                <p className="text-sm text-red-600 mt-2" key={index}>
+                  {error}
+                </p>
+              ))}
           </div>
 
           <div className="mb-4">
@@ -145,9 +206,22 @@ const ReceiptManagementModal = ({ isOpen, onClose, onSave }) => {
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
                 dateFormat="yyyy/MM/dd"
-                className="border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2"
+                className={cn(
+                  'border border-solid focus:border focus:border-solid border-gray-300 rounded w-full p-2',
+                  shouldShowError(
+                    errors,
+                    'date',
+                    receiptData.date.length === 0
+                  ) && 'border-red-600'
+                )}
               />
             </div>
+            {shouldShowError(errors, 'date', receiptData.date.length === 0) &&
+              errors.date.map((error, index) => (
+                <p className="text-sm text-red-600 mt-2" key={index}>
+                  {error}
+                </p>
+              ))}
           </div>
 
           <button

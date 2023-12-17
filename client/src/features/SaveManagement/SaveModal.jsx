@@ -1,21 +1,15 @@
 import React from 'react';
 import { Button, Modal } from 'antd';
-import { money } from '~/utils';
+import { money, objUtils } from '~/utils';
+import NoData from '../NoData/NoData';
 
-const SaveDetailModal = ({ month, year, open, setOpen }) => {
-  const saving = [
-    { amount: 10000000, date: '01/10/2023', description: 'Tiết kiệm 1' },
-    {
-      amount: 15000000,
-      date: '03/10/2023',
-      description: 'Mua điện thoại',
-    },
-    { amount: -5000000, date: '28/10/2023', description: 'Nộp viện phí' },
-  ];
+const SaveDetailModal = ({ saving, open, setOpen }) => {
+  if (objUtils.isEmptyObject(saving)) return <></>;
+
   return (
     <Modal
       width={480}
-      title={`Tháng ${month} / ${year}`}
+      title={`Tháng ${saving.month} / ${saving.year}`}
       open={open}
       onCancel={() => setOpen(false)}
       centered
@@ -32,20 +26,21 @@ const SaveDetailModal = ({ month, year, open, setOpen }) => {
           <div className="font-bold text-left">Số tiền</div>
           <div className="font-bold text-left">Ngày</div>
           <div className="font-bold text-left">Mô tả</div>
-          {saving.map((saving, index) => (
+          {saving.savings.map((item, index) => (
             <React.Fragment key={index}>
               <div
                 className={`text-left ${
-                  saving.amount < 0 ? 'text-red-500' : 'text-green-500'
+                  item.amount < 0 ? 'text-red-500' : 'text-green-500'
                 }`}
               >
-                {money.formatVietnameseCurrency(saving.amount)}
+                {money.formatVietnameseCurrency(item.amount)}
               </div>
-              <div className="text-left">{saving.date}</div>
-              <div className="text-left">{saving.description}</div>
+              <div className="text-left">{item.date}</div>
+              <div className="text-left">{item.description}</div>
             </React.Fragment>
           ))}
         </div>
+        {saving.savings.length === 0 && <NoData />}
 
         <footer className="flex items-center justify-center gap-4"></footer>
       </div>
