@@ -74,4 +74,9 @@ class Category extends Model
     {
         return $this->hasMany(PayingMoney::class);
     }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
 }

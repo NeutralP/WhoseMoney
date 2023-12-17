@@ -84,6 +84,15 @@ const PayingMoneyModal = ({
             autoClose: 1500,
           });
 
+          const notis = data.noti;
+          if (notis && notis.length > 0) {
+            notis.forEach((noti) => {
+              toast.error(noti.title, {
+                autoClose: 1500,
+              });
+            });
+          }
+
           setOpen(false);
           fetchUser();
           if (openFromCategory) {
@@ -122,6 +131,15 @@ const PayingMoneyModal = ({
           toast.success('Thêm khoản chi thành công.', {
             autoClose: 1500,
           });
+
+          const notis = data.noti;
+          if (notis && notis.length > 0) {
+            notis.forEach((noti) => {
+              toast.error(noti.title, {
+                autoClose: 1500,
+              });
+            });
+          }
 
           setOpen(false);
           fetchUser();

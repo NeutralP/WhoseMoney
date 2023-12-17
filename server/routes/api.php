@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EarningMoneyController;
 use App\Http\Controllers\EarningTargetController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PayingMoneyController;
 use App\Http\Controllers\SavingMoneyController;
 use App\Http\Controllers\SavingTargetController;
@@ -107,6 +108,13 @@ Route::controller(CategoryController::class)->group(function () {
         Route::patch('/{categoryId}', 'update');
         Route::patch('/{categoryId}/pay_limit', 'updatePayLimit');
         Route::delete('/{categoryId}', 'destroy');
+    });
+});
+
+// Notifications
+Route::controller(NotificationController::class)->group(function () {
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', 'index');
     });
 });
 

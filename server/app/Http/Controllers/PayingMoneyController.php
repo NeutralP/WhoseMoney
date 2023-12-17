@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\PayingMoney;
 use Exception;
 use Illuminate\Http\Request;
@@ -75,11 +76,46 @@ class PayingMoneyController extends Controller
 
             $payingMoney = PayingMoney::create($data);
 
+            $notification = array();
+            list($year, $month, $day) = explode('-', $data['date']);
+
+            // Create a notification for paying money
+            if ($cur_balance->amount < 0) {
+                $noti = $payingMoney->notifications()->create([
+                    'user_id' => $user->id,
+                    'title' => 'Your balance is less than 0 now.',
+                ]);
+
+                // Add noti to notification
+                $notification[] = $noti;
+            }
+
+            // Create a notification for category
+            $category = $payingMoney->category;
+            // Get the category total pay
+            $total_pay = $category->payingMoney()->sum('amount');
+            if (
+                $total_pay > $category->payingLimits()
+                ->where('year', $year)
+                ->where('month', $month)
+                ->first()
+                ->limit
+            ) {
+                $noti = $category->notifications()->create([
+                    'user_id' => $user->id,
+                    'title' => 'You have exceeded the limit of the category',
+                ]);
+
+                // Add noti to notification
+                $notification[] = $noti;
+            }
+
             if ($payingMoney) {
                 $payingMoney->load('category');
 
                 return response()->json([
                     'data' => $payingMoney,
+                    'noti' => $notification,
                     'message' => 'Created',
                 ], 201);
             }
@@ -129,10 +165,38 @@ class PayingMoneyController extends Controller
 
                 $payingMoney->update($data);
 
+                $notification = array();
+
+                // Create a notification for paying money
+                if ($cur_balance->amount < $prev_balance->amount) {
+                    $noti = $payingMoney->notifications()->create([
+                        'user_id' => $user->id,
+                        'title' => 'Your balance is less than the previous balance',
+                    ]);
+
+                    // Add noti to notification
+                    $notification[] = $noti;
+                }
+
+                // Create a notification for category
+                $category = $payingMoney->category()->get();
+                // Get the category total pay
+                $total_pay = $category->payingMoney()->sum('amount');
+                if ($total_pay > $category->payingLimit()->limit) {
+                    $noti = $category->notifications()->create([
+                        'user_id' => $user->id,
+                        'title' => 'You have exceeded the limit',
+                    ]);
+
+                    // Add noti to notification
+                    $notification[] = $noti;
+                }
+
                 $payingMoney->load('category');
 
                 return response()->json([
                     'data' => $payingMoney,
+                    'noti' => $notification,
                     'message' => 'Updated',
                 ], 200);
             }
