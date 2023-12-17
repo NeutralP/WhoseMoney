@@ -36,4 +36,9 @@ class PayingMoney extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
 }

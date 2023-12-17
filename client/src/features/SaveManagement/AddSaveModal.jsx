@@ -60,11 +60,11 @@ const AddSaveModal = ({
       <div className="py-2 grid grid-cols-[120px_1fr] gap-y-4 items-center">
         <>
           <p className="text-base font-medium">Tiết kiệm trước:</p>
-          <p>{money.formatVietnameseCurrency(totalSaving)}</p>
+          <p>{money.formatVietnameseCurrency(totalSaving || 0)}</p>
           <p className="text-base font-medium">Tiết kiệm sau:</p>
           <p>
             {money.formatVietnameseCurrency(
-              Number(totalSaving) + Number(saving.amount)
+              Number(totalSaving || 0) + Number(saving.amount)
             )}
           </p>
         </>

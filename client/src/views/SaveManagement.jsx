@@ -186,7 +186,8 @@ const SaveManagement = () => {
       </h2>
       <div className="flex container justify-between mb-3">
         <p className="">
-          Tổng tiền tiết kiệm: {money.formatVietnameseCurrency(totalSaving)}
+          Tổng tiền tiết kiệm:{' '}
+          {money.formatVietnameseCurrency(totalSaving || 0)}
         </p>
         <p className="">
           Số ngày còn lại trong tháng: {getDateLeftInCurrentMonth()}

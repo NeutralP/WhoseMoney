@@ -121,22 +121,6 @@ const Sidebar = ({}) => {
           isMobile && 'w-0'
         )}
       >
-        <div className="sidebar-item">
-          <div role="button" onClick={handleLogOut}>
-            Logout
-          </div>
-          <div
-            role="button"
-            className={cn(
-              'w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition',
-              isMobile && 'opacity-100'
-            )}
-            onClick={collapse}
-          >
-            <AiOutlineMenuUnfold className="w-6 h-6" />
-          </div>
-        </div>
-
         <Link
           to="/dashboard"
           className={cn(
@@ -202,6 +186,22 @@ const Sidebar = ({}) => {
           </div>
         </Link>
 
+        <div className="sidebar-item">
+          <div role="button" onClick={handleLogOut}>
+            Logout
+          </div>
+          {/* <div
+            role="button"
+            className={cn(
+              'w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition',
+              isMobile && 'opacity-100'
+            )}
+            onClick={collapse}
+          >
+            <AiOutlineMenuUnfold className="w-6 h-6" />
+          </div> */}
+        </div>
+
         <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}
@@ -220,13 +220,13 @@ const Sidebar = ({}) => {
         )}
       >
         <nav className="bg-transparent px-3 py-2 w-full">
-          {isCollapsed && (
+          {/* {isCollapsed && (
             <AiOutlineMenuUnfold
               onClick={resetWidth}
               role="button"
               className="h-6 w-6 text-muted-foreground"
             />
-          )}
+          )} */}
         </nav>
       </div>
     </>

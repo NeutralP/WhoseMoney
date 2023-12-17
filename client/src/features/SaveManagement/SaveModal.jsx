@@ -22,7 +22,7 @@ const SaveDetailModal = ({ saving, open, setOpen }) => {
           Tổng tiết kiệm tháng:
         </header>
 
-        <div className="grid grid-cols-3 gap-4 bg-gray-200 p-4 rounded-md shadow-md">
+        <div className="max-h-[400px] overflow-y-auto grid grid-cols-3 gap-4 bg-gray-200 p-4 rounded-md shadow-md">
           <div className="font-bold text-left">Số tiền</div>
           <div className="font-bold text-left">Ngày</div>
           <div className="font-bold text-left">Mô tả</div>
