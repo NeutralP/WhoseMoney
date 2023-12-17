@@ -50,6 +50,9 @@ class User extends Authenticatable implements JWTSubject
     protected $appends = [
         'prev_balance',
         'cur_balance',
+        'total_pay',
+        'total_save',
+        'total_earn',
     ];
 
     // protected function __construct()
@@ -73,6 +76,30 @@ class User extends Authenticatable implements JWTSubject
                 ->where('name', 'cur_balance')
                 ->first()
                 ->amount,
+        );
+    }
+
+    protected function totalPay(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->payingMoney()
+                ->sum('amount'),
+        );
+    }
+
+    protected function totalSave(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->savingMoney()
+                ->sum('amount'),
+        );
+    }
+
+    protected function totalEarn(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->earningMoney()
+                ->sum('amount'),
         );
     }
 
