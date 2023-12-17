@@ -225,7 +225,9 @@ const ReceiptManagement = () => {
                     <Button
                       onClick={() => {
                         setSelectedReceipt(receipt);
-                        setReceiptDetailModalOpen(true);
+                        setTimeout(() => {
+                          setReceiptDetailModalOpen(true);
+                        }, 0);
                       }}
                       className="text-blue-500"
                     >
@@ -234,7 +236,9 @@ const ReceiptManagement = () => {
                     <Button
                       onClick={() => {
                         setSelectedReceipt(receipt);
-                        setEditModalOpen(true);
+                        setTimeout(() => {
+                          setEditModalOpen(true);
+                        }, 0);
                       }}
                     >
                       <FaEdit />

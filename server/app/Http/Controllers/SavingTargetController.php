@@ -26,11 +26,37 @@ class SavingTargetController extends Controller
         }
     }
 
+    public function show($month, $year)
+    {
+        try {
+            $user = auth()->user();
+            // Calculate the months and years for the current month, the previous month, and the month before that
+            $months = [$month, ($month - 1 + 12) % 12 ?: 12, ($month - 2 + 12) % 12 ?: 12];
+            $years = [$year, $month == 1 ? $year - 1 : $year, $month <= 2 ? $year - 1 : $year];
+
+            $targets = $user->savingTargets()
+                ->whereIn('year', $years)
+                ->whereIn('month', $months)
+                ->get();
+
+            if ($targets) {
+                return response()->json([
+                    'data' => $targets,
+                    'message' => 'Get data successfully.',
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         try {
             $data = $request->validate([
-                'target' => 'numeric|required',
+                'target' => 'numeric|required|min:1',
                 'month' => 'integer|required',
                 'year' => 'integer|required',
             ]);

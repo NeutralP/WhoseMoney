@@ -33,7 +33,7 @@ class CategoryController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'string|required',
-                'limit' => 'numeric|required',
+                'limit' => 'numeric|required|min:1',
             ]);
 
             $user = auth()->user();
@@ -113,7 +113,7 @@ class CategoryController extends Controller
     {
         try {
             $data = $request->validate([
-                'limit' => 'numeric|required',
+                'limit' => 'numeric|required|min:1',
                 'month' => 'integer|required',
                 'year' => 'integer|required',
             ]);

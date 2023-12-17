@@ -13,7 +13,7 @@ class BalanceController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'string|required',
-                'amount' => 'numeric|required',
+                'amount' => 'numeric|required|min:1',
             ]);
 
             $user = auth()->user();
@@ -39,7 +39,7 @@ class BalanceController extends Controller
         try {
             $data = $request->validate([
                 // 'name' => 'string|required',
-                'amount' => 'numeric|required'
+                'amount' => 'numeric|required|min:1'
             ]);
 
             $user = auth()->user();

@@ -50,7 +50,7 @@ class PayingMoneyController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'string|required',
-                'amount' => 'integer|required',
+                'amount' => 'integer|required|min:1',
                 'date' => 'date|required',
                 'category_id' => 'exists:categories,id|required',
                 'user_id' => 'exists:users,id|required',
@@ -100,7 +100,7 @@ class PayingMoneyController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'string|required',
-                'amount' => 'integer|required',
+                'amount' => 'integer|required|min:1',
                 'date' => 'date|required',
             ]);
 

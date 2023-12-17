@@ -1,102 +1,122 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Input } from 'antd';
-import dayjs from 'dayjs';
-import { HiOutlineSwitchVertical } from 'react-icons/hi';
-import axiosClient from '~/axios';
-import { toast } from 'react-toastify';
-
-const numberOfDaysInCurrentMonth = dayjs().daysInMonth();
+import useSavingStore from '~/store/useSavingStore';
+import { shouldShowError } from '~/utils';
 
 const EditSavingLimitModal = ({
   open,
-  savingMoney,
-  setSavingMoney,
   setOpen,
+  targetId,
+  selectedMonthTarget,
+  selectedMonth,
+  selectedYear,
 }) => {
-  const [limit, setLimit] = useState(0);
-  const currentDate = new Date();
-  const initialMonth = currentDate.getMonth() + 1; // getMonth() returns a zero-based month, so we add 1
-  const initialYear = currentDate.getFullYear();
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
-  const [selectedYear, setSelectedYear] = useState(initialYear);
+  const [targetErrors, createSavingTarget, updateSavingTarget] = useSavingStore(
+    (state) => [
+      state.targetErrors,
+      state.createSavingTarget,
+      state.updateSavingTarget,
+    ]
+  );
+
+  const [target, setTarget] = useState({
+    target: 0,
+    month: selectedMonth,
+    year: selectedYear,
+  });
+
   useEffect(() => {
-    // Find the saving for the selected month and year
-    const saving = savingMoney.find(
-      (saving) => saving.month === selectedMonth && saving.year === selectedYear
-    );
-    // If a saving was found, set the limit to its saving_target
-    if (saving) {
-      setLimit(saving.saving_target);
-    }
-  }, [selectedMonth, selectedYear, savingMoney]);
+    selectedMonthTarget &&
+      setTarget({
+        target: selectedMonthTarget,
+        month: selectedMonth,
+        year: selectedYear,
+      });
+  }, [selectedMonthTarget]);
 
   const handleCancel = () => {
     setOpen(false);
   };
 
-  const handleOk = async () => {
-    try {
-      // Update the saving_target in the savingMoney array
-      setSavingMoney((prevState) =>
-        prevState.map((saving) =>
-          saving.month === selectedMonth && saving.year === selectedYear
-            ? { ...saving, saving_target: limit }
-            : saving
-        )
+  const handleOk = () => {
+    if (targetId) {
+      updateSavingTarget(
+        targetId,
+        target,
+        selectedMonth,
+        selectedYear,
+        setOpen
       );
-
-      toast.success('Chỉnh sửa hạn mức thành công', {
-        autoClose: 1500,
-      });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setOpen(false);
+    } else {
+      createSavingTarget(target, selectedMonth, selectedYear, setOpen);
     }
   };
 
   return (
     <Modal
-      title="Edit Saving Limit"
+      title="Cài đặt hạn mức"
       open={open}
       centered
       onCancel={handleCancel}
       onOk={handleOk}
       width={400}
-      className="py-4"
+      className="custom-modal"
       zIndex={1001}
     >
-      <div className="flex flex-col pb-4">
+      <div className="flex flex-col py-4">
         <div className="flex flex-col ">
-          <div className="flex flex-row items-center ml-4 mb-4 justify-between">
+          <div className="flex flex-row items-center w-full mb-4 justify-between">
             <p className="whitespace-nowrap">Hạn mức</p>
-            <Input
-              className="w-3/5 mr-8"
-              type="number"
-              value={limit}
-              onChange={(e) => setLimit(e.target.value)}
-            />
+            <div>
+              <Input
+                className="w-full"
+                type="number"
+                value={target.target}
+                onChange={(e) =>
+                  setTarget({ ...target, target: Number(e.target.value) })
+                }
+                status={
+                  shouldShowError(
+                    targetErrors,
+                    'target',
+                    Number(target.target) === 0
+                  ) && 'error'
+                }
+              />
+              {shouldShowError(
+                targetErrors,
+                'target',
+                Number(target.target) === 0
+              ) &&
+                targetErrors.target.map((error, index) => (
+                  <p className="text-sm text-red-600 mt-2" key={index}>
+                    {error}
+                  </p>
+                ))}
+            </div>
           </div>
-          <div className="flex flex-row items-center ml-4 mb-4 justify-between">
+          <div className="flex flex-row items-center w-full mb-4 justify-between">
             <p className="align-middle mr-2">Năm</p>
             <select
-              className="border border-gray-300 bg-white rounded mr-8 p-2"
+              className="border border-gray-300 bg-white rounded p-2"
               value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
+              onChange={(e) => setTarget({ ...target, year: e.target.value })}
             >
-              {Array.from({ length: 11 }, (_, i) => i + 2020).map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
+              {Array.from({ length: 11 }, (_, i) => selectedYear + i).map(
+                (year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                )
+              )}
             </select>
           </div>
-          <div className="flex flex-row items-center ml-4 mb-4 justify-between">
+          <div className="flex flex-row items-center w-full justify-between">
             <p className="align-middle mr-2">Tháng</p>
             <select
-              className="border border-gray-300 bg-white rounded mr-8 p-2"
+              className="border border-gray-300 bg-white rounded p-2"
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
+              onChange={(e) => setTarget({ ...target, month: e.target.value })}
             >
               {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                 <option key={month} value={month}>

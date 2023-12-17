@@ -57,7 +57,7 @@ Route::controller(EarningMoneyController::class)->group(function () {
 
 // EarningTarget handlers
 Route::controller(EarningTargetController::class)->group(function () {
-    Route::prefix('earning-target')->group(function () {
+    Route::prefix('earning-targets')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
         Route::patch('/{targetId}', 'update');
@@ -89,8 +89,9 @@ Route::controller(SavingMoneyController::class)->group(function () {
 
 // Saving target controller
 Route::controller(SavingTargetController::class)->group(function () {
-    Route::prefix('saving-target')->group(function () {
+    Route::prefix('saving-targets')->group(function () {
         Route::get('/', 'index');
+        Route::get('/{month}/{year}', 'show');
         Route::post('/', 'store');
         Route::patch('/{targetId}', 'update');
         Route::delete('/{targetId}', 'delete');

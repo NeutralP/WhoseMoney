@@ -11,7 +11,7 @@ class SavingMoneyController extends Controller
     {
         try {
             $user = auth()->user();
-            $saving_money = $user->savingMoney()->get();
+            $saving_money = $user->savingMoney()->sum('amount');
 
             if ($saving_money) {
                 return response()->json([
@@ -29,10 +29,6 @@ class SavingMoneyController extends Controller
     public function show($month, $year)
     {
         try {
-            // $data = $request->validate([
-            //     'month' => 'required|integer',
-            //     'year' => 'required|integer',
-            // ]);
             $user = auth()->user();
             // Calculate the months and years for the current month, the previous month, and the month before that
             $months = [$month, ($month - 1 + 12) % 12 ?: 12, ($month - 2 + 12) % 12 ?: 12];
@@ -49,11 +45,6 @@ class SavingMoneyController extends Controller
                     'message' => 'Get data successfully.',
                 ], 200);
             }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $e->errors(),
-            ], 422);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -65,7 +56,7 @@ class SavingMoneyController extends Controller
     {
         try {
             $data = $request->validate([
-                'amount' => 'required|integer',
+                'amount' => 'required|integer|min:1',
                 'date' => 'required|date',
                 'description' => 'required|string',
             ]);

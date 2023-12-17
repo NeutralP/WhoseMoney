@@ -33,7 +33,7 @@ class EarningMoneyController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'required|string',
-                'amount' => 'required|integer',
+                'amount' => 'required|integer|min:1',
                 'date' => 'required|date',
                 'source' => 'required|string',
             ]);
@@ -81,7 +81,7 @@ class EarningMoneyController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'required|string',
-                'amount' => 'required|integer',
+                'amount' => 'required|integer|min:1',
                 'date' => 'required|date',
                 'source' => 'required|string',
             ]);

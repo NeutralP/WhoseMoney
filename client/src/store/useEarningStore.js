@@ -11,7 +11,7 @@ const useEarningStore = create((set) => ({
   fetchTargets: () => {
     set({ fetchingTargets: true });
     axiosClient
-      .get('earning-target')
+      .get('earning-targets')
       .then(({ data }) => {
         set({ targets: data.data });
       })

@@ -30,7 +30,7 @@ class EarningTargetController extends Controller
     {
         try {
             $data = $request->validate([
-                'target' => 'numeric|required',
+                'target' => 'numeric|required|min:1',
                 'month' => 'integer|required',
                 'year' => 'integer|required',
             ]);

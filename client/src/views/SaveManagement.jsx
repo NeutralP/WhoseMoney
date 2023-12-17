@@ -19,60 +19,161 @@ const SaveManagement = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [editSavingLimitModal, setEditSavingLimitModal] = useState(false);
+  const [selectedSave, setSelectedSave] = useState({}); // { month, year, amount, target
 
-  const [
-    savingMoney,
-    setSavingMoney,
-    fetchingSavingMoney,
-    fetchSavingMoneyByMonth,
-  ] = useSavingStore((state) => [
+  const [totalSaving, fetchingSavingMoney, fetchSavingMoney] = useSavingStore(
+    (state) => [
+      state.totalSaving,
+      state.fetchingSavingMoney,
+      state.fetchSavingMoney,
+    ]
+  );
+
+  const [savingMoney, fetchSavingMoneyByMonth] = useSavingStore((state) => [
     state.savingMoney,
-    state.setSavingMoney,
-    state.fetchingSavingMoney,
     state.fetchSavingMoneyByMonth,
   ]);
+
+  const [savingTargets, fetchSavingTargetsByMonth] = useSavingStore((state) => [
+    state.savingTargets,
+    state.fetchSavingTargetsByMonth,
+  ]);
+
+  useEffect(() => {
+    fetchSavingMoney();
+  }, []);
 
   useEffect(() => {
     fetchSavingMoneyByMonth(selectedMonth, selectedYear);
   }, [selectedMonth, selectedYear]);
 
   useEffect(() => {
-    const newFilteredSavings = savingMoney.filter((savingMoney) => {
+    fetchSavingTargetsByMonth(selectedMonth, selectedYear);
+  }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    // Get current month data
+    const currentMonthSaving = savingMoney.filter((savingMoney) => {
       return (
-        (selectedMonth ? savingMoney.month === selectedMonth : true) &&
-        (selectedYear ? savingMoney.year === selectedYear : true)
+        selectedMonth === savingMoney.month && selectedYear === savingMoney.year
       );
     });
-    setFilteredSavings(newFilteredSavings);
-  }, [savingMoney, selectedMonth, selectedYear]);
-
-  const thisMonthSavingMoney = useMemo(() => {
-    return (
-      savingMoney.find(
-        (saving) =>
-          saving.month === selectedMonth && saving.year === selectedYear
-      ) ?? {
-        amount: 0,
-        target: 0,
-      }
+    const currentMonthTotalSaving = currentMonthSaving.reduce((acc, saving) => {
+      return acc + saving.amount;
+    }, 0);
+    const currentMonthTargetItem = savingTargets.find(
+      (savingTarget) =>
+        savingTarget.month === selectedMonth &&
+        savingTarget.year === selectedYear
     );
-  }, [savingMoney, selectedMonth, selectedYear]);
+    const currentMonthTarget = currentMonthTargetItem
+      ? currentMonthTargetItem.target
+      : 0;
+    const currentMonthCompletion =
+      currentMonthTarget > 0
+        ? Math.min(
+            Math.round((currentMonthTotalSaving * 100) / currentMonthTarget),
+            100
+          )
+        : 0;
+
+    const currentMonth = {
+      total_save: currentMonthTotalSaving,
+      month: selectedMonth,
+      year: selectedYear,
+      target: currentMonthTarget,
+      completion: currentMonthCompletion,
+      savings: currentMonthSaving,
+    };
+
+    // Get previous month data
+    let month = (selectedMonth - 1 + 12) % 12 || 12;
+    let year = selectedMonth - 1 === 0 ? selectedYear - 1 : selectedYear;
+
+    const prevMonthSaving = savingMoney.filter((savingMoney) => {
+      return month === savingMoney.month && year === savingMoney.year;
+    });
+    const prevMonthTotalSaving = prevMonthSaving.reduce((acc, saving) => {
+      return acc + saving.amount;
+    }, 0);
+    const prevMonthTargetItem = savingTargets.find(
+      (savingTarget) =>
+        savingTarget.month === year && savingTarget.year === year
+    );
+    const prevMonthTarget = prevMonthTargetItem
+      ? prevMonthTargetItem.target
+      : 0;
+    const prevMonthCompletion =
+      prevMonthTarget > 0
+        ? Math.min(
+            Math.round((prevMonthTotalSaving * 100) / prevMonthTarget),
+            100
+          )
+        : 0;
+
+    const prevMonth = {
+      total_save: prevMonthTotalSaving,
+      month: month,
+      year: year,
+      target: prevMonthTarget,
+      completion: prevMonthCompletion,
+      savings: prevMonthSaving,
+    };
+
+    // Get prev x2 month data
+    month =
+      selectedMonth - 2 <= 0
+        ? (selectedMonth - 2 + 12) % 12 || 12
+        : selectedMonth - 2;
+    year = selectedMonth - 2 <= 0 ? selectedYear - 1 : selectedYear;
+
+    const pprevMonthSaving = savingMoney.filter((savingMoney) => {
+      return month === savingMoney.month && year === savingMoney.year;
+    });
+    const pprevMonthTotalSaving = pprevMonthSaving.reduce((acc, saving) => {
+      return acc + saving.amount;
+    }, 0);
+    const pprevMonthTargetItem = savingTargets.find(
+      (savingTarget) =>
+        savingTarget.month === year && savingTarget.year === year
+    );
+    const pprevMonthTarget = pprevMonthTargetItem
+      ? pprevMonthTargetItem.target
+      : 0;
+    const pprevMonthCompletion =
+      pprevMonthTarget > 0
+        ? Math.min(
+            Math.round((pprevMonthTotalSaving * 100) / pprevMonthTarget),
+            100
+          )
+        : 0;
+
+    const pprevMonth = {
+      total_save: pprevMonthTotalSaving,
+      month: month,
+      year: year,
+      target: pprevMonthTarget,
+      completion: pprevMonthCompletion,
+      savings: pprevMonthSaving,
+    };
+
+    const newFilteredSavings = [currentMonth, prevMonth, pprevMonth];
+    setFilteredSavings(newFilteredSavings);
+  }, [savingMoney, savingTargets, selectedMonth, selectedYear]);
 
   const percentage = useMemo(() => {
-    if (thisMonthSavingMoney.amount === 0) return 0;
-    const value = Math.round(
-      (thisMonthSavingMoney.amount / thisMonthSavingMoney.target) * 100
+    if (filteredSavings.length === 0) return 0;
+
+    if (filteredSavings[0].target === 0) return 0;
+    const value = Math.min(
+      Math.round(
+        (filteredSavings[0].total_save / filteredSavings[0].target) * 100
+      ),
+      100
     );
     return value;
-  }, [thisMonthSavingMoney]);
+  }, [filteredSavings]);
   const testData = [{ bgcolor: '#1677ff', completed: percentage }];
-
-  const calculateTotalAmount = () => {
-    return savingMoney.reduce((acc, saving) => {
-      const amount = saving.amount;
-      return acc + amount;
-    }, 0);
-  };
 
   if (fetchingSavingMoney) {
     return <Fallback />;
@@ -85,8 +186,7 @@ const SaveManagement = () => {
       </h2>
       <div className="flex container justify-between mb-3">
         <p className="">
-          Tổng tiền tiết kiệm:{' '}
-          {/* {money.formatVietnameseCurrency(calculateTotalAmount())} */}
+          Tổng tiền tiết kiệm: {money.formatVietnameseCurrency(totalSaving)}
         </p>
         <p className="">
           Số ngày còn lại trong tháng: {getDateLeftInCurrentMonth()}
@@ -96,13 +196,15 @@ const SaveManagement = () => {
         <div>
           <p className="">
             Tiết kiệm tháng này:{' '}
-            {/* {money.formatVietnameseCurrency(thisMonthSavingMoney.amount)} */}
+            {money.formatVietnameseCurrency(
+              filteredSavings[0]?.total_save ?? 0
+            )}
           </p>
         </div>
         <div>
           <p className="">
             Hạn mức tháng này:{' '}
-            {/* {money.formatVietnameseCurrency(thisMonthSavingMoney.target)} */}
+            {money.formatVietnameseCurrency(filteredSavings[0]?.target ?? 0)}
           </p>
         </div>
       </div>
@@ -150,7 +252,7 @@ const SaveManagement = () => {
       </div>
       <div className="mt-12  mb-4">
         <div className="w-full h-96 flex flex-col overflow-auto">
-          {filteredSavings.map((saving) => (
+          {filteredSavings.map((saving, index) => (
             <Card
               title={
                 <Title className="mt-2" level={5}>
@@ -161,25 +263,24 @@ const SaveManagement = () => {
               bordered={true}
               type="inner"
               extra={
-                saving.month === new Date().getMonth() + 1 &&
-                saving.year === new Date().getFullYear()
+                saving.month === selectedMonth && saving.year === selectedYear
                   ? `Còn lại ${getDateLeftInCurrentMonth()} ngày`
                   : 'Hoàn thành'
               }
               onClick={() => {
+                setSelectedSave(saving);
                 setDetailModalOpen(true);
               }}
+              key={index}
             >
               <div className="flex justify-between mb-2 mt-2">
                 <p>
                   Tổng tiền tiết kiệm:{' '}
-                  {/* {money.formatVietnameseCurrency(saving.amount)} */}
+                  {money.formatVietnameseCurrency(saving.total_save)}
                 </p>
-                <span>
-                  {/* {Math.round((saving.amount * 100) / saving.target)}% */}
-                </span>
+                <span>{saving.completion}%</span>
               </div>
-              {/* <p>Hạn mức: {money.formatVietnameseCurrency(saving.target)}</p> */}
+              <p>Hạn mức: {money.formatVietnameseCurrency(saving.target)}</p>
             </Card>
           ))}
           {filteredSavings.length === 0 && (
@@ -202,21 +303,30 @@ const SaveManagement = () => {
         Cài hạn mức
       </button>
 
-      <AddSaveModal isOpen={modalOpen} setModalOpen={setModalOpen} />
+      <AddSaveModal
+        isOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+      />
 
       <SaveDetailModal
-        month={selectedMonth}
-        year={selectedYear}
-        saving={thisMonthSavingMoney}
+        saving={selectedSave}
         open={detailModalOpen}
         setOpen={setDetailModalOpen}
       />
 
       <EditSavingLimitModal
         open={editSavingLimitModal}
-        savingMoney={savingMoney}
-        setSavingMoney={setSavingMoney}
         setOpen={setEditSavingLimitModal}
+        targetId={
+          savingTargets.find(
+            (s) => s.month === selectedMonth && s.year === selectedYear
+          )?.id
+        }
+        selectedMonthTarget={filteredSavings[0]?.target}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
       />
     </div>
   );
